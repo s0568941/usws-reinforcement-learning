@@ -8,10 +8,12 @@ import pygame
 pygame.init()
 
 from usws_jump_and_run_game.characters.player import Player
-player = Player(10, 480, 20, 40)
+player = Player(10, 530, 40, 20)
+
+bg = pygame.image.load('../pictures/bg.jpg')
 
 # Konstanten
-SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 500, 500
+SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 1380, 600
 JUMP_VELOCITY = 8
 
 #Titel und Groesse fuer das Fenster setzen
@@ -20,6 +22,17 @@ screen = pygame.display.set_mode(SIZE)
 
 # Boolean: True = Spiel laeuft | False = Spiel Ende
 run = True
+
+# Auslagerung der Zeichenaktionen
+
+def redrawGameWindows():
+    # Hintergrundbildboden muss noch angepasst werden
+    screen.blit(bg, (0, 0))
+    # Spieler wird vorerst durch ein Rechteck dargestellt
+    pygame.draw.rect(screen, (255, 0, 0), (player.x, player.y, player.width, player.height))
+    # Aktualisiere das Fenster
+    pygame.display.update()
+
 
 while run:
     pygame.time.delay(100)
@@ -61,13 +74,6 @@ while run:
             player.jump_velocity = JUMP_VELOCITY
             player.is_jump = False
 
+    redrawGameWindows()
 
-
-    # Vorerst Schwarzer Hintergrund (RGB)
-    screen.fill((0, 0, 0))
-    # Spieler wird vorerst durch ein Rechteck dargestellt
-    pygame.draw.rect(screen, (255, 0, 0), (player.x, player.y, player.width, player.height))
-    # Aktualisiere das Fenster
-    pygame.display.update() 
-    
 pygame.quit()
