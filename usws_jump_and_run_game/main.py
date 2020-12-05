@@ -31,7 +31,6 @@ run = True
 def redrawGameWindows():
     # Hintergrundbildboden muss noch angepasst werden
     screen.blit(bg, (0, 0))
-
     # Spieler wird vorerst durch ein Rechteck dargestellt
     pygame.draw.rect(screen, (255, 0, 0), (player.x, player.y, player.width, player.height))
     # Aktualisiere das Fenster
