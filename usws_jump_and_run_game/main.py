@@ -10,7 +10,10 @@ pygame.init()
 from usws_jump_and_run_game.characters.player import Player
 player = Player(10, 530, 40, 20)
 
+# Laden des Bildes aus 'pictures'
 bg = pygame.image.load('../pictures/bg.jpg')
+
+clock = pygame.time.Clock()
 
 # Konstanten
 SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 1380, 600
@@ -28,6 +31,7 @@ run = True
 def redrawGameWindows():
     # Hintergrundbildboden muss noch angepasst werden
     screen.blit(bg, (0, 0))
+
     # Spieler wird vorerst durch ein Rechteck dargestellt
     pygame.draw.rect(screen, (255, 0, 0), (player.x, player.y, player.width, player.height))
     # Aktualisiere das Fenster
@@ -35,7 +39,8 @@ def redrawGameWindows():
 
 
 while run:
-    pygame.time.delay(100)
+    # erhöht die FPS-Anzahl um das Spiel fluessiger zu gestalten
+    clock.tick(27)
 
     # Schaue nach ob eines der events das Spiel beenden moechte (Fensterkreuz)
     for event in pygame.event.get():
@@ -50,14 +55,26 @@ while run:
     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
     if keys[pygame.K_LEFT] and player.x > player.speed:
         player.x -= player.speed
+        player.left = True
+        player.right = False
 
-    if keys[pygame.K_RIGHT] and player.x < (SCREEN_WIDTH - player.width - player.speed):
+    elif keys[pygame.K_RIGHT] and player.x < (SCREEN_WIDTH - player.width - player.speed):
         player.x += player.speed
+        player.left = False
+        player.right = True
+    else:
+        player.left = False
+        player.right = False
+        player.walk_count = 0
 
     # Wenn der Spieler nicht springt, dann bewegt er sich normal mit der Geschwindigkeit
     if not player.is_jump:
         if keys[pygame.K_SPACE]:
             player.is_jump = True
+            player.left = False
+            player.right = False
+            player.walk_count = 0
+
     # Wenn der Spieler springt, dann erfolgt das mithilfe einer quadratischen Formel
     # https://www.geeksforgeeks.org/python-making-an-object-jump-in-pygame/
     else:
