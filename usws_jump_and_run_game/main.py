@@ -56,12 +56,6 @@ while run:
 
     # Wenn der Spieler nicht springt, dann bewegt er sich normal mit der Geschwindigkeit
     if not player.is_jump:
-        if keys[pygame.K_UP] and player.y > player.speed:
-            player.y -= player.speed
-
-        if keys[pygame.K_DOWN] and player.y < (SCREEN_HEIGHT - player.height - player.speed):
-            player.y += player.speed
-            
         if keys[pygame.K_SPACE]:
             player.is_jump = True
     # Wenn der Spieler springt, dann erfolgt das mithilfe einer quadratischen Formel
