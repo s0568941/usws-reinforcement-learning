@@ -11,7 +11,7 @@ from usws_jump_and_run_game.characters.player import Player
 player = Player(10, 530, 40, 20)
 
 # Laden des Bildes aus 'pictures'
-bg = pygame.image.load('../pictures/bg.jpg')
+bg = pygame.image.load('pictures/bg.jpg')
 
 clock = pygame.time.Clock()
 
