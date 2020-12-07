@@ -61,18 +61,21 @@ while run:
         player.x -= player.speed
         player.left = True
         player.right = False
-        player.last_direction = 'l'
+        player.idle_left = True
+        player.idle_right = False
 
     elif keys[pygame.K_RIGHT] and player.x < (SCREEN_WIDTH - player.width - player.speed):
         player.x += player.speed
         player.left = False
         player.right = True
-        player.last_direction = 'r'
+        player.idle_left = False
+        player.idle_right = True
 
     else:
         player.left = False
         player.right = False
-        player.walk_count = 0
+
+
 
     # Wenn der Spieler nicht springt, dann bewegt er sich normal mit der Geschwindigkeit
     if not player.is_jump:
