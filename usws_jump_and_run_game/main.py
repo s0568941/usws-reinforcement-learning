@@ -8,10 +8,10 @@ import pygame
 pygame.init()
 
 from usws_jump_and_run_game.characters.player import Player
-player = Player(10, 430, 40, 20)
+player = Player(10, 430, 40, 128)
 
 # Laden des Bildes aus 'pictures'
-bg = pygame.image.load('pictures/background.jpg')
+background = pygame.image.load('pictures/background.jpg')
 
 clock = pygame.time.Clock()
 
@@ -30,7 +30,7 @@ run = True
 
 def redrawGameWindows():
     # Hintergrundbildboden muss noch angepasst werden
-    screen.blit(bg, (0, 0))
+    screen.blit(background, (0, 0))
     # Spieler wird vorerst durch ein Rechteck dargestellt
     player.draw(screen)
     # Aktualisiere das Fenster
