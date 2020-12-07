@@ -8,7 +8,8 @@ import pygame
 pygame.init()
 
 from usws_jump_and_run_game.characters.player import Player
-player = Player(10, 430, 40, 128)
+player = Player(10, 530, 40, 128)
+
 
 clock = pygame.time.Clock()
 

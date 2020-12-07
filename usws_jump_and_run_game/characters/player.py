@@ -4,9 +4,8 @@ import pygame
 pygame.init()
 
 # Array mit Bildern des Characters
-walk_right = [pygame.image.load('characters/pictures/right1.png'), pygame.image.load('characters/pictures/right2.png'), pygame.image.load('characters/pictures/right3.png'), pygame.image.load('characters/pictures/right4.png'), pygame.image.load('characters/pictures/right5.png'), pygame.image.load('characters/pictures/right6.png'), pygame.image.load('characters/pictures/right7.png'), pygame.image.load('characters/pictures/right8.png'), pygame.image.load('characters/pictures/right9.png')]
-walk_left = [pygame.image.load('characters/pictures/left1.png'), pygame.image.load('characters/pictures/left2.png'), pygame.image.load('characters/pictures/left3.png'), pygame.image.load('characters/pictures/left4.png'), pygame.image.load('characters/pictures/left5.png'), pygame.image.load('characters/pictures/left6.png'), pygame.image.load('characters/pictures/left7.png'), pygame.image.load('characters/pictures/left8.png'), pygame.image.load('characters/pictures/left9.png')]
-
+walk_right = [pygame.image.load('characters/pictures/run/right1.png'), pygame.image.load('characters/pictures/run/right2.png'), pygame.image.load('characters/pictures/run/right3.png'), pygame.image.load('characters/pictures/run/right4.png'), pygame.image.load('characters/pictures/run/right5.png'), pygame.image.load('characters/pictures/run/right6.png')]
+walk_left = [pygame.image.load('characters/pictures/run/left1.png'), pygame.image.load('characters/pictures/run/left2.png'), pygame.image.load('characters/pictures/run/left3.png'), pygame.image.load('characters/pictures/run/left4.png'), pygame.image.load('characters/pictures/run/left5.png'), pygame.image.load('characters/pictures/run/left6.png')]
 
 class Player:
     def __init__(self, x, y, height, width):
@@ -26,7 +25,7 @@ class Player:
 
     def draw(self, screen):
         # Mithilfe von walk_count wird ein Bild aus dem Array ausgesucht, was die Bewegung animiert
-        if (self.walk_count + 1) >= 27:
+        if (self.walk_count + 1) >= 18:
             self.walk_count = 0
 
         if self.left:
