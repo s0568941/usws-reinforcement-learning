@@ -55,21 +55,26 @@ while run:
     # Hole eine aktuelle Liste der Tasten, die gedrueckt wurden
     keys = pygame.key.get_pressed()
 
+
     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
     if keys[pygame.K_LEFT] and player.x > player.speed:
         player.x -= player.speed
-        player.left = True
-        player.right = False
-        player.idle_left = True
-        player.idle_right = False
+        if not player.is_jump:
+            player.left = True
+            player.right = False
+            player.idle_left = True
+            player.idle_right = False
+            player.last_dir = 'l'
 
     elif keys[pygame.K_RIGHT] and player.x < (SCREEN_WIDTH - player.width - player.speed):
         player.x += player.speed
-        player.left = False
-        player.right = True
-        player.idle_left = False
-        player.idle_right = True
+        if not player.is_jump:
+            player.left = False
+            player.right = True
+            player.idle_left = False
+            player.idle_right = True
+            player.last_dir = 'r'
 
     else:
         player.left = False

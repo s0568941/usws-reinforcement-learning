@@ -4,10 +4,12 @@ import pygame
 pygame.init()
 
 # Array mit Bildern des Characters
-walk_right = [pygame.image.load('characters/pictures/run/right1.png'), pygame.image.load('characters/pictures/run/right2.png'), pygame.image.load('characters/pictures/run/right3.png'), pygame.image.load('characters/pictures/run/right4.png'), pygame.image.load('characters/pictures/run/right5.png'), pygame.image.load('characters/pictures/run/right6.png')]
-walk_left = [pygame.image.load('characters/pictures/run/left1.png'), pygame.image.load('characters/pictures/run/left2.png'), pygame.image.load('characters/pictures/run/left3.png'), pygame.image.load('characters/pictures/run/left4.png'), pygame.image.load('characters/pictures/run/left5.png'), pygame.image.load('characters/pictures/run/left6.png')]
+walk_right_p = [pygame.image.load('characters/pictures/run/right1.png'), pygame.image.load('characters/pictures/run/right2.png'), pygame.image.load('characters/pictures/run/right3.png'), pygame.image.load('characters/pictures/run/right4.png'), pygame.image.load('characters/pictures/run/right5.png'), pygame.image.load('characters/pictures/run/right6.png')]
+walk_left_p = [pygame.image.load('characters/pictures/run/left1.png'), pygame.image.load('characters/pictures/run/left2.png'), pygame.image.load('characters/pictures/run/left3.png'), pygame.image.load('characters/pictures/run/left4.png'), pygame.image.load('characters/pictures/run/left5.png'), pygame.image.load('characters/pictures/run/left6.png')]
 idle_left_p = [pygame.image.load('characters/pictures/idle/idleL1.png'), pygame.image.load('characters/pictures/idle/idleL2.png'), pygame.image.load('characters/pictures/idle/idleL3.png')]
 idle_right_p = [pygame.image.load('characters/pictures/idle/idleR1.png'), pygame.image.load('characters/pictures/idle/idleR2.png'), pygame.image.load('characters/pictures/idle/idleR3.png')]
+jump_left_p = [pygame.image.load('characters/pictures/jump/jumpL1.png'), pygame.image.load('characters/pictures/jump/jumpL2.png'), pygame.image.load('characters/pictures/jump/jumpL3.png'), pygame.image.load('characters/pictures/jump/jumpL4.png')]
+jump_right_p = [pygame.image.load('characters/pictures/jump/jumpR1.png'), pygame.image.load('characters/pictures/jump/jumpR2.png'), pygame.image.load('characters/pictures/jump/jumpR3.png'), pygame.image.load('characters/pictures/jump/jumpR4.png')]
 
 class Player:
     def __init__(self, x, y, height, width):
@@ -25,6 +27,9 @@ class Player:
         self.idle_left = False
         self.idle_right = False
         self.idle_count = 0
+        self.jump_count = 0
+        self.last_dir = ''
+
 
     def draw(self, screen):
         # Mithilfe von walk_count wird ein Bild aus dem Array ausgesucht, was die Bewegung animiert
@@ -34,18 +39,26 @@ class Player:
         if (self.idle_count + 1) >= 18:
             self.idle_count = 0
 
+        if (self.jump_count + 1) >= 8:
+            self.jump_count = 0
+
         if self.left:
-            screen.blit(walk_left[self.walk_count // 3], (self.x, self.y))
+            screen.blit(walk_left_p[self.walk_count // 3], (self.x, self.y))
             self.walk_count += 1
         elif self.right:
-            screen.blit(walk_right[self.walk_count // 3], (self.x, self.y))
+            screen.blit(walk_right_p[self.walk_count // 3], (self.x, self.y))
             self.walk_count += 1
-
+        elif self.is_jump:
+            if self.last_dir == 'r':
+                screen.blit(jump_right_p[self.jump_count // 2], (self.x, self.y))
+                self.jump_count += 1
+            else:
+                screen.blit(jump_left_p[self.jump_count // 2], (self.x, self.y))
+                self.jump_count += 1
         else:
             if self.idle_left:
                 screen.blit(idle_left_p[self.idle_count // 6], (self.x, self.y))
                 self.idle_count += 1
-
             else:
                 screen.blit(idle_right_p[self.idle_count // 6], (self.x, self.y))
                 self.idle_count += 1
