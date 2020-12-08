@@ -6,8 +6,8 @@ pygame.init()
 # Array mit Bildern des Characters
 walk_right = [pygame.image.load('characters/pictures/run/right1.png'), pygame.image.load('characters/pictures/run/right2.png'), pygame.image.load('characters/pictures/run/right3.png'), pygame.image.load('characters/pictures/run/right4.png'), pygame.image.load('characters/pictures/run/right5.png'), pygame.image.load('characters/pictures/run/right6.png')]
 walk_left = [pygame.image.load('characters/pictures/run/left1.png'), pygame.image.load('characters/pictures/run/left2.png'), pygame.image.load('characters/pictures/run/left3.png'), pygame.image.load('characters/pictures/run/left4.png'), pygame.image.load('characters/pictures/run/left5.png'), pygame.image.load('characters/pictures/run/left6.png')]
-idle_left = [pygame.image.load('characters/pictures/idle/idleL1.png'), pygame.image.load('characters/pictures/idle/idleL1.png'), pygame.image.load('characters/pictures/idle/idleL1.png')]
-idle_right = [pygame.image.load('characters/pictures/idle/idleR1.png'), pygame.image.load('characters/pictures/idle/idleR2.png'), pygame.image.load('characters/pictures/idle/idleR3.png')]
+idle_left_p = [pygame.image.load('characters/pictures/idle/idleL1.png'), pygame.image.load('characters/pictures/idle/idleL2.png'), pygame.image.load('characters/pictures/idle/idleL3.png')]
+idle_right_p = [pygame.image.load('characters/pictures/idle/idleR1.png'), pygame.image.load('characters/pictures/idle/idleR2.png'), pygame.image.load('characters/pictures/idle/idleR3.png')]
 
 class Player:
     def __init__(self, x, y, height, width):
@@ -43,10 +43,9 @@ class Player:
 
         else:
             if self.idle_left:
-                screen.blit(idle_left[self.idle_count // 6], (self.x, self.y))
+                screen.blit(idle_left_p[self.idle_count // 6], (self.x, self.y))
                 self.idle_count += 1
 
-            #TODO LINKE IDLE ANIMATION FUNKTIONIERT NOCH NICHT
             else:
-                screen.blit(idle_right[self.idle_count // 6], (self.x, self.y))
+                screen.blit(idle_right_p[self.idle_count // 6], (self.x, self.y))
                 self.idle_count += 1
