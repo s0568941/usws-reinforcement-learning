@@ -29,6 +29,7 @@ class Player:
         self.idle_count = 0
         self.jump_count = 0
         self.last_dir = ''
+        self.hitbox = (self.x + 17, self.y + 7, self.height, self.width)
 
 
     def draw(self, screen):
@@ -62,3 +63,6 @@ class Player:
             else:
                 screen.blit(idle_right_p[self.idle_count // 6], (self.x, self.y))
                 self.idle_count += 1
+        self.hitbox = (self.x + 17, self.y + 7, self.height, self.width)
+        #Displaying the players hitbox with a red rectangle
+        pygame.draw.rect(screen, (255,0,0), self.hitbox, 2)
