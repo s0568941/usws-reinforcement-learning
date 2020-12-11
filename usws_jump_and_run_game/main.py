@@ -6,27 +6,24 @@
 import pygame
 # Initialisiert alle notwendigen module fuer pygame
 pygame.init()
+# import additional pygame functions
+import usws_jump_and_run_game.pygame_functions as pygame_f
 
 from usws_jump_and_run_game.characters.player import Player
-player = Player(10, 530, 15, 28)
-
+player = Player(690, 620, 15, 28)
 
 clock = pygame.time.Clock()
 
 # Konstanten
-SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 1380, 600
+SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 1380, 690
 JUMP_VELOCITY = 8
 
 # Laden des Bildes aus 'pictures'
-bg_image = pygame.image.load('environment/pictures/hills_bg.png')
-bg_image = pygame.transform.scale(bg_image, (SIZE))
-
-
-
-
+pygame_f.screenSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+pygame_f.setAutoUpdate(False)
+pygame_f.setBackgroundImage('environment/pictures/hills_bg_scaled.png')
 #Titel und Groesse fuer das Fenster setzen
-pygame.display.set_caption("USWS Jump and Run")
-screen = pygame.display.set_mode(SIZE)
+pygame_f.pygame.display.set_caption('USWS Jump and Run')
 
 # Boolean: True = Spiel laeuft | False = Spiel Ende
 run = True
@@ -34,12 +31,9 @@ run = True
 # Auslagerung der Zeichenaktionen
 
 def redrawGameWindows():
-    # Hintergrundbildboden muss noch angepasst werden
-    screen.blit(bg_image, (0, 0))
-    # Spieler wird vorerst durch ein Rechteck dargestellt
-    player.draw(screen)
-    # Aktualisiere das Fenster
-    pygame.display.update()
+    # Aktualisiere das Fenster (background & player)
+    player.draw(pygame_f.screen)
+    pygame_f.updateDisplay()
 
 
 while run:
@@ -59,6 +53,7 @@ while run:
     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
     if keys[pygame.K_LEFT] and player.x > player.speed:
+        pygame_f.scrollBackground(5, 0)
         player.x -= player.speed
         if not player.is_jump:
             player.left = True
@@ -68,6 +63,7 @@ while run:
             player.last_dir = 'l'
 
     elif keys[pygame.K_RIGHT] and player.x < (SCREEN_WIDTH - player.width - player.speed):
+        pygame_f.scrollBackground(-5, 0)
         player.x += player.speed
         if not player.is_jump:
             player.left = False
@@ -77,6 +73,7 @@ while run:
             player.last_dir = 'r'
 
     else:
+        pygame_f.scrollBackground(0, 0)
         player.left = False
         player.right = False
 
@@ -85,6 +82,7 @@ while run:
     # Wenn der Spieler nicht springt, dann bewegt er sich normal mit der Geschwindigkeit
     if not player.is_jump:
         if keys[pygame.K_SPACE]:
+            pygame_f.scrollBackground(0, 0)
             player.is_jump = True
             player.left = False
             player.right = False

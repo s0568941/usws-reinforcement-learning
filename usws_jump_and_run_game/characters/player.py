@@ -13,8 +13,11 @@ jump_right_p = [pygame.image.load('characters/pictures/jump/jumpR1.png'), pygame
 
 class Player:
     def __init__(self, x, y, height, width):
+        # static_x and static_y keep the player at the same spot while x and y track his movement in the environment
         self.x = x
+        self.static_x = x
         self.y = y
+        self.static_y = y
         self.height = height
         self.width = width
         self.speed = 5
@@ -44,25 +47,26 @@ class Player:
             self.jump_count = 0
 
         if self.left:
-            screen.blit(walk_left_p[self.walk_count // 3], (self.x, self.y))
+            screen.blit(walk_left_p[self.walk_count // 3], (self.static_x, self.static_y))
             self.walk_count += 1
         elif self.right:
-            screen.blit(walk_right_p[self.walk_count // 3], (self.x, self.y))
+            screen.blit(walk_right_p[self.walk_count // 3], (self.static_x, self.static_y))
             self.walk_count += 1
         elif self.is_jump:
             if self.last_dir == 'r':
-                screen.blit(jump_right_p[self.jump_count // 2], (self.x, self.y))
+                screen.blit(jump_right_p[self.jump_count // 2], (self.static_x, self.y))
                 self.jump_count += 1
             else:
-                screen.blit(jump_left_p[self.jump_count // 2], (self.x, self.y))
+                screen.blit(jump_left_p[self.jump_count // 2], (self.static_x, self.y))
                 self.jump_count += 1
         else:
             if self.idle_left:
-                screen.blit(idle_left_p[self.idle_count // 6], (self.x, self.y))
+                screen.blit(idle_left_p[self.idle_count // 6], (self.static_x, self.static_y))
                 self.idle_count += 1
             else:
-                screen.blit(idle_right_p[self.idle_count // 6], (self.x, self.y))
+                screen.blit(idle_right_p[self.idle_count // 6], (self.static_x, self.static_y))
                 self.idle_count += 1
-        self.hitbox = (self.x + 17, self.y + 7, self.height, self.width)
+        #TODO hitbox will need to be moving with x instead of static_x
+        self.hitbox = (self.static_x + 17, self.y + 7, self.height, self.width)
         #Displaying the players hitbox with a red rectangle
         pygame.draw.rect(screen, (255,0,0), self.hitbox, 2)
