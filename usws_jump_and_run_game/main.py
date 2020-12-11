@@ -53,7 +53,7 @@ while run:
     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
     if keys[pygame.K_LEFT] and player.x > player.speed:
-        pygame_f.scrollBackground(5, 0)
+        pygame_f.scrollBackground(player.speed, 0)
         player.x -= player.speed
         if not player.is_jump:
             player.left = True
@@ -62,8 +62,9 @@ while run:
             player.idle_right = False
             player.last_dir = 'l'
 
-    elif keys[pygame.K_RIGHT] and player.x < (SCREEN_WIDTH - player.width - player.speed):
-        pygame_f.scrollBackground(-5, 0)
+    elif keys[pygame.K_RIGHT]:
+        #and player.x < (SCREEN_WIDTH - player.width - player.speed)
+        pygame_f.scrollBackground(-player.speed, 0)
         player.x += player.speed
         if not player.is_jump:
             player.left = False
