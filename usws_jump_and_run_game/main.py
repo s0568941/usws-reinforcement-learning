@@ -2,27 +2,22 @@
 # -*- coding: utf-8 -*-
 
 # Das ist die main File, welche das Game startet
-
 import pygame
 # Initialisiert alle notwendigen module fuer pygame
 pygame.init()
 # import additional pygame functions
 import usws_jump_and_run_game.pygame_functions as pygame_f
-
+# import constants
+from usws_jump_and_run_game.utils.constants import *
 from usws_jump_and_run_game.characters.player import Player
-player = Player(690, 620, 15, 28)
+player = Player(STARTING_POSITION, 620, 15, 28)
 
 clock = pygame.time.Clock()
 
-# Konstanten
-SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 1380, 690
-JUMP_VELOCITY = 8
-
-# Laden des Bildes aus 'pictures'
+# Setup screen and background
 pygame_f.screenSize(SCREEN_WIDTH, SCREEN_HEIGHT)
 pygame_f.setAutoUpdate(False)
 pygame_f.setBackgroundImage('environment/pictures/hills_bg_scaled.png')
-#Titel und Groesse fuer das Fenster setzen
 pygame_f.pygame.display.set_caption('USWS Jump and Run')
 
 # Boolean: True = Spiel laeuft | False = Spiel Ende
@@ -30,7 +25,7 @@ run = True
 
 # Auslagerung der Zeichenaktionen
 
-def redrawGameWindows():
+def redraw_game_window():
     # Aktualisiere das Fenster (background & player)
     player.draw(pygame_f.screen)
     pygame_f.updateDisplay()
@@ -53,8 +48,13 @@ while run:
     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
     if keys[pygame.K_LEFT] and player.x > player.speed:
-        pygame_f.scrollBackground(player.speed, 0)
-        player.x -= player.speed
+        # Scrolling background is deactivated once player arrives at the center and proceeds to the left
+        if player.x > PLAYER_STATIC_X:
+            pygame_f.scrollBackground(player.speed, 0)
+        else:
+            pygame_f.scrollBackground(0, 0)
+        player.move_left()
+
         if not player.is_jump:
             player.left = True
             player.right = False
@@ -63,9 +63,15 @@ while run:
             player.last_dir = 'l'
 
     elif keys[pygame.K_RIGHT]:
-        #and player.x < (SCREEN_WIDTH - player.width - player.speed)
-        pygame_f.scrollBackground(-player.speed, 0)
-        player.x += player.speed
+        # TODO: Add limit when level is finished
+        #  and player.x < (SCREEN_WIDTH - player.width - player.speed)
+        # Scrolling background is activated once player arrives at the center
+        if player.x > PLAYER_STATIC_X:
+            pygame_f.scrollBackground(-player.speed, 0)
+        else:
+            pygame_f.scrollBackground(0, 0)
+        player.move_right()
+
         if not player.is_jump:
             player.left = False
             player.right = True
@@ -77,7 +83,6 @@ while run:
         pygame_f.scrollBackground(0, 0)
         player.left = False
         player.right = False
-
 
 
     # Wenn der Spieler nicht springt, dann bewegt er sich normal mit der Geschwindigkeit
@@ -99,6 +104,6 @@ while run:
             player.jump_velocity = JUMP_VELOCITY
             player.is_jump = False
 
-    redrawGameWindows()
+    redraw_game_window()
 
 pygame.quit()

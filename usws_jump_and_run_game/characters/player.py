@@ -1,15 +1,39 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import pygame
+
 pygame.init()
 
+from usws_jump_and_run_game.utils.constants import *
+
 # Array mit Bildern des Characters
-walk_right_p = [pygame.image.load('characters/pictures/run/right1.png'), pygame.image.load('characters/pictures/run/right2.png'), pygame.image.load('characters/pictures/run/right3.png'), pygame.image.load('characters/pictures/run/right4.png'), pygame.image.load('characters/pictures/run/right5.png'), pygame.image.load('characters/pictures/run/right6.png')]
-walk_left_p = [pygame.image.load('characters/pictures/run/left1.png'), pygame.image.load('characters/pictures/run/left2.png'), pygame.image.load('characters/pictures/run/left3.png'), pygame.image.load('characters/pictures/run/left4.png'), pygame.image.load('characters/pictures/run/left5.png'), pygame.image.load('characters/pictures/run/left6.png')]
-idle_left_p = [pygame.image.load('characters/pictures/idle/idleL1.png'), pygame.image.load('characters/pictures/idle/idleL2.png'), pygame.image.load('characters/pictures/idle/idleL3.png')]
-idle_right_p = [pygame.image.load('characters/pictures/idle/idleR1.png'), pygame.image.load('characters/pictures/idle/idleR2.png'), pygame.image.load('characters/pictures/idle/idleR3.png')]
-jump_left_p = [pygame.image.load('characters/pictures/jump/jumpL1.png'), pygame.image.load('characters/pictures/jump/jumpL2.png'), pygame.image.load('characters/pictures/jump/jumpL3.png'), pygame.image.load('characters/pictures/jump/jumpL4.png')]
-jump_right_p = [pygame.image.load('characters/pictures/jump/jumpR1.png'), pygame.image.load('characters/pictures/jump/jumpR2.png'), pygame.image.load('characters/pictures/jump/jumpR3.png'), pygame.image.load('characters/pictures/jump/jumpR4.png')]
+walk_right_p = [pygame.image.load('characters/pictures/run/right1.png'),
+                pygame.image.load('characters/pictures/run/right2.png'),
+                pygame.image.load('characters/pictures/run/right3.png'),
+                pygame.image.load('characters/pictures/run/right4.png'),
+                pygame.image.load('characters/pictures/run/right5.png'),
+                pygame.image.load('characters/pictures/run/right6.png')]
+walk_left_p = [pygame.image.load('characters/pictures/run/left1.png'),
+               pygame.image.load('characters/pictures/run/left2.png'),
+               pygame.image.load('characters/pictures/run/left3.png'),
+               pygame.image.load('characters/pictures/run/left4.png'),
+               pygame.image.load('characters/pictures/run/left5.png'),
+               pygame.image.load('characters/pictures/run/left6.png')]
+idle_left_p = [pygame.image.load('characters/pictures/idle/idleL1.png'),
+               pygame.image.load('characters/pictures/idle/idleL2.png'),
+               pygame.image.load('characters/pictures/idle/idleL3.png')]
+idle_right_p = [pygame.image.load('characters/pictures/idle/idleR1.png'),
+                pygame.image.load('characters/pictures/idle/idleR2.png'),
+                pygame.image.load('characters/pictures/idle/idleR3.png')]
+jump_left_p = [pygame.image.load('characters/pictures/jump/jumpL1.png'),
+               pygame.image.load('characters/pictures/jump/jumpL2.png'),
+               pygame.image.load('characters/pictures/jump/jumpL3.png'),
+               pygame.image.load('characters/pictures/jump/jumpL4.png')]
+jump_right_p = [pygame.image.load('characters/pictures/jump/jumpR1.png'),
+                pygame.image.load('characters/pictures/jump/jumpR2.png'),
+                pygame.image.load('characters/pictures/jump/jumpR3.png'),
+                pygame.image.load('characters/pictures/jump/jumpR4.png')]
+
 
 class Player:
     def __init__(self, x, y, height, width):
@@ -33,7 +57,6 @@ class Player:
         self.jump_count = 0
         self.last_dir = ''
         self.hitbox = (self.x + 17, self.y + 7, self.height, self.width)
-
 
     def draw(self, screen):
         # Mithilfe von walk_count wird ein Bild aus dem Array ausgesucht, was die Bewegung animiert
@@ -66,7 +89,20 @@ class Player:
             else:
                 screen.blit(idle_right_p[self.idle_count // 6], (self.static_x, self.static_y))
                 self.idle_count += 1
-        #TODO hitbox will need to be moving with x instead of static_x
+        # TODO hitbox will need to be moving with x instead of static_x
         self.hitbox = (self.static_x + 17, self.y + 7, self.height, self.width)
-        #Displaying the players hitbox with a red rectangle
-        pygame.draw.rect(screen, (255,0,0), self.hitbox, 2)
+        # Displaying the players hitbox with a red rectangle
+        pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
+
+
+    def move_right(self):
+        self.x += self.speed
+        if(self.x >= PLAYER_STATIC_X):
+            self.static_x = PLAYER_STATIC_X
+        else:
+            self.static_x = self.x
+
+    def move_left(self):
+        self.x -= self.speed
+        if(self.x <= PLAYER_STATIC_X):
+            self.static_x = self.x
