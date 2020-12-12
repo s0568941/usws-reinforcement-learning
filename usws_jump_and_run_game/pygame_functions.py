@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # pygame_functions
+# Pygame functions - code from https://github.com/StevePaget/Pygame_Functions
 
 # Documentation at www.github.com/stevepaget/pygame_functions
 # Report bugs at https://github.com/StevePaget/Pygame_Functions/issues
