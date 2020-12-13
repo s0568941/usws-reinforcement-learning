@@ -17,7 +17,7 @@ clock = pygame.time.Clock()
 # Setup screen and background
 pygame_f.screenSize(SCREEN_WIDTH, SCREEN_HEIGHT)
 pygame_f.setAutoUpdate(False)
-pygame_f.setBackgroundImage('environment/pictures/hills_bg_scaled.png')
+pygame_f.setBackgroundImage('environment/pictures/hills_bg_scaled2.png')
 pygame_f.pygame.display.set_caption('USWS Jump and Run')
 
 # Boolean: True = Spiel laeuft | False = Spiel Ende
