@@ -10,7 +10,7 @@ import usws_jump_and_run_game.pygame_functions as pygame_f
 # import constants
 from usws_jump_and_run_game.utils.constants import *
 from usws_jump_and_run_game.characters.player import Player
-player = Player(STARTING_POSITION, 620, 15, 28)
+player = Player(STARTING_POSITION, 595, 20, 40)
 
 clock = pygame.time.Clock()
 
