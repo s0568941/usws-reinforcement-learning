@@ -6,11 +6,15 @@ import pygame
 # Initialisiert alle notwendigen module fuer pygame
 pygame.init()
 # import additional pygame functions
-import usws_jump_and_run_game.pygame_functions as pygame_f
+import usws_jump_and_run_game.utils.pygame_functions as pygame_f
 # import constants
 from usws_jump_and_run_game.utils.constants import *
 from usws_jump_and_run_game.characters.player import Player
-player = Player(STARTING_POSITION, 595, 20, 40)
+from usws_jump_and_run_game.environment.obstacles.platform import Platform
+player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
+platform = Platform(900, 600, 100, 30)
+obstacles = [platform]
+player.obstacles = obstacles
 
 clock = pygame.time.Clock()
 
@@ -28,6 +32,7 @@ run = True
 def redraw_game_window():
     # Aktualisiere das Fenster (background & player)
     player.draw(pygame_f.screen)
+    platform.draw(pygame_f.screen)
     pygame_f.updateDisplay()
 
 
@@ -51,6 +56,7 @@ while run:
         # Scrolling background is deactivated once player arrives at the center and proceeds to the left
         if player.x > PLAYER_STATIC_X:
             pygame_f.scrollBackground(player.speed, 0)
+            platform.move_right()
         else:
             pygame_f.scrollBackground(0, 0)
         player.move_left()
@@ -68,6 +74,7 @@ while run:
         # Scrolling background is activated once player arrives at the center
         if player.x > PLAYER_STATIC_X:
             pygame_f.scrollBackground(-player.speed, 0)
+            platform.move_left()
         else:
             pygame_f.scrollBackground(0, 0)
         player.move_right()
@@ -97,12 +104,7 @@ while run:
     # Wenn der Spieler springt, dann erfolgt das mithilfe einer quadratischen Formel
     # https://www.geeksforgeeks.org/python-making-an-object-jump-in-pygame/
     else:
-        if player.jump_velocity >= -JUMP_VELOCITY:
-            player.y -= (player.jump_velocity * abs(player.jump_velocity)) * (1 / 2)
-            player.jump_velocity -= 1
-        else:
-            player.jump_velocity = JUMP_VELOCITY
-            player.is_jump = False
+        player.jump()
 
     redraw_game_window()
 
