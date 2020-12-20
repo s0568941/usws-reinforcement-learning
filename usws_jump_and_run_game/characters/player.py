@@ -176,22 +176,22 @@ class Player:
         if self.y < Y_STARTING_POSITION and not self.is_jump:
             is_landed = False
             while not is_landed:
-                deb = (- self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
+                height_jump = (- self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
                 self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
-                if (self.hitbox[1] + self.hitbox[3]) - deb <= (Y_STARTING_POSITION + self.hitbox[3]):
+                char_feet_y = self.hitbox[1] + self.hitbox[3]
+                ground_y = Y_STARTING_POSITION + self.hitbox[3]
+                if char_feet_y - height_jump <= ground_y:
                     self.y -= (- self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
                     self.jump_velocity -= 1
                     self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
                 else:
                     self.y = math.ceil(self.y)
-                    diff = abs(int(Y_STARTING_POSITION - self.y))
-                    vel_counter = 100
-                    while diff != 0:
-                        vel_counter -= vel_counter * 1 / 2
+                    distance_to_ground = abs(int(Y_STARTING_POSITION - self.y))
+                    while distance_to_ground != 0:
                         # TODO smoother falling velocity
-                        self.y -= -(1 / 4) * (1 / 150)
+                        self.y -= -(1 / 8) * (1 / 150)
                         self.jump_velocity -= 1
-                        diff = abs(int(Y_STARTING_POSITION - self.y))
+                        distance_to_ground = abs(int(Y_STARTING_POSITION - self.y))
                         self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
 
                 if math.ceil(self.y) == Y_STARTING_POSITION:
@@ -202,15 +202,13 @@ class Player:
 
     def jump(self):
         if self.jump_velocity >= -JUMP_VELOCITY:
-            char_feet_y = self.hitbox[1] + self.hitbox[3]
-            char_left_edge_hitbox_x = self.hitbox[0]
-            char_right_hitbox_x = self.hitbox[0] + self.hitbox[2]
             for obstacle in self.obstacles:
+                char_feet_y = self.hitbox[1] + self.hitbox[3]
+                char_left_edge_hitbox_x = self.hitbox[0]
+                char_right_hitbox_x = self.hitbox[0] + self.hitbox[2]
                 obstacle_y = obstacle.hitbox[1]
                 obstacle_left_edge_x = obstacle.hitbox[0]
                 obstacle_right_edge_x = obstacle.hitbox[0] + obstacle.hitbox[2]
-                # first part: obstacle y is underneath players feet
-                # second part:
                 if obstacle_y >= char_feet_y \
                         and char_left_edge_hitbox_x >= obstacle_left_edge_x \
                         and char_right_hitbox_x <= obstacle_right_edge_x \
@@ -219,23 +217,22 @@ class Player:
                     is_landed = False
                     while not is_landed:
                         self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
+                        char_feet_y = self.hitbox[1] + self.hitbox[3]
                         # for debug:
-                        deb = (self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
-                        if (self.hitbox[1] + self.hitbox[3]) - deb <= obstacle.hitbox[1]:
+                        height_jump = (self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
+                        if char_feet_y - height_jump <= obstacle_y:
                             self.y -= (self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
                             self.jump_velocity -= 1
                             self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
                         else:
-                            diff = abs(int((self.hitbox[1] + self.hitbox[3]) - obstacle.hitbox[1]))
-                            vel_counter = 100
+                            diff = abs(int(char_feet_y - obstacle_y))
                             while diff != 0:
-                                vel_counter -= vel_counter * 1 / 2
                                 self.y -= -(1 / 20) * (1 / 150)
                                 self.jump_velocity -= 1
-                                diff = abs(int((self.hitbox[1] + self.hitbox[3]) - obstacle.hitbox[1]))
+                                diff = abs(int((self.hitbox[1] + self.hitbox[3]) - obstacle_y))
                                 self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
 
-                        if math.ceil(self.hitbox[1] + self.hitbox[3]) == obstacle.hitbox[1]:
+                        if math.ceil(self.hitbox[1] + self.hitbox[3]) == obstacle_y:
                             is_landed = True
                             self.is_on_obstacle = True
                             self.jump_velocity = JUMP_VELOCITY
