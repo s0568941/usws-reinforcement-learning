@@ -171,7 +171,8 @@ class Player:
             if math.ceil(moving_hitbox_y + self.hitbox[3]) == obstacle.hitbox[1] or self.is_on_obstacle:
                 obstacle_right_edge = obstacle.x + obstacle.hitbox[2]
                 player_is_between_platform_edges = obstacle.x <= moving_hitbox_x < obstacle_right_edge \
-                        or obstacle.x <= (moving_hitbox_x + self.hitbox[2]) <= obstacle_right_edge
+                                                   or obstacle.x <= (moving_hitbox_x +
+                                                                     self.hitbox[2]) <= obstacle_right_edge
                 if player_is_between_platform_edges:
                     self.is_on_obstacle = True
                     self.is_fall = False
@@ -198,17 +199,17 @@ class Player:
         if self.jump_velocity >= -JUMP_VELOCITY:
             for obstacle in self.obstacles:
                 char_feet_y = self.hitbox[1] + self.hitbox[3]
-                char_left_edge_hitbox_x = self.hitbox[0]
-                char_right_hitbox_x = self.hitbox[0] + self.hitbox[2]
-                obstacle_y = obstacle.hitbox[1]
-                obstacle_left_edge_x = obstacle.hitbox[0]
-                obstacle_right_edge_x = obstacle.hitbox[0] + obstacle.hitbox[2]
+                char_left_edge_hitbox_x = self.static_x + PLAYER_HITBOX_PADDING_X + 15
+                char_right_hitbox_x = char_left_edge_hitbox_x + self.hitbox[2] - 30
+                obstacle_y = obstacle.y
+                obstacle_left_edge_x = obstacle.x
+                obstacle_right_edge_x = obstacle_left_edge_x + obstacle.hitbox[2]
                 # if obstacle is underneath char
                 obstacle_underneath_player = obstacle_y >= char_feet_y \
-                        and char_left_edge_hitbox_x >= obstacle_left_edge_x \
-                        and char_right_hitbox_x <= obstacle_right_edge_x \
-                        and self.jump_velocity < 0 \
-                        and not self.is_on_obstacle
+                                             and char_left_edge_hitbox_x >= obstacle_left_edge_x \
+                                             and char_right_hitbox_x <= obstacle_right_edge_x \
+                                             and self.jump_velocity < 0 \
+                                             and not self.is_on_obstacle
 
                 if obstacle_underneath_player:
                     distance_to_obstacle = abs(int(obstacle_y - char_feet_y))
