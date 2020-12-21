@@ -107,6 +107,9 @@ while run:
     else:
         player.jump()
 
+    if player.is_fall and not player.is_on_obstacle and player.y != Y_STARTING_POSITION:
+        player.fall_from_obstacle()
+
     redraw_game_window()
 
 pygame.quit()

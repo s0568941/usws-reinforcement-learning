@@ -72,6 +72,8 @@ class Player:
         self.is_on_obstacle = False
         self.obstacles = []
         self.movement_blocked = False
+        self.fall_vel = 0
+        self.is_fall = False
 
     def draw(self, screen):
         # Mithilfe von walk_count wird ein Bild aus dem Array ausgesucht, was die Bewegung animiert
@@ -118,6 +120,7 @@ class Player:
             else:
                 self.static_x = self.x
 
+            self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
             self.check_for_vertical_obstacles()
             if not self.is_on_obstacle:
                 self.fall_from_obstacle()
@@ -129,6 +132,7 @@ class Player:
             if self.x <= PLAYER_STATIC_X:
                 self.static_x = self.x
 
+            self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
             self.check_for_vertical_obstacles()
             if not self.is_on_obstacle:
                 self.fall_from_obstacle()
@@ -157,48 +161,38 @@ class Player:
         self.movement_blocked = False
         return self.movement_blocked
 
+    # check if player is on obstacle
     def check_for_vertical_obstacles(self):
+        global moving_hitbox_x, moving_hitbox_y
         for obstacle in self.obstacles:
-            # check if player is on obstacle
             moving_hitbox_x = self.static_x + PLAYER_HITBOX_PADDING_X
             moving_hitbox_y = self.y + PLAYER_HITBOX_PADDING_Y
-            if math.ceil(moving_hitbox_y + self.hitbox[3]) == obstacle.hitbox[1]:
-                obstacle_right_edge = obstacle.hitbox[0] + obstacle.hitbox[2]
-                if obstacle.hitbox[0] < moving_hitbox_x < obstacle_right_edge \
-                        or obstacle.hitbox[0] < (moving_hitbox_x + self.hitbox[2]) < obstacle_right_edge:
+            # if players feet align with surface of obstacle:
+            if math.ceil(moving_hitbox_y + self.hitbox[3]) == obstacle.hitbox[1] or self.is_on_obstacle:
+                obstacle_right_edge = obstacle.x + obstacle.hitbox[2]
+                player_is_between_platform_edges = obstacle.x <= moving_hitbox_x < obstacle_right_edge \
+                        or obstacle.x <= (moving_hitbox_x + self.hitbox[2]) <= obstacle_right_edge
+                if player_is_between_platform_edges:
                     self.is_on_obstacle = True
+                    self.is_fall = False
                     return self.is_on_obstacle
 
         self.is_on_obstacle = False
+        self.is_fall = True
         return False
 
+    # player falls from obstacle as soon as he leaves the edge of the surface
     def fall_from_obstacle(self):
         if self.y < Y_STARTING_POSITION and not self.is_jump:
-            is_landed = False
-            while not is_landed:
-                height_jump = (- self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
-                self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
-                char_feet_y = self.hitbox[1] + self.hitbox[3]
-                ground_y = Y_STARTING_POSITION + self.hitbox[3]
-                if char_feet_y - height_jump <= ground_y:
-                    self.y -= (- self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
-                    self.jump_velocity -= 1
-                    self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
-                else:
-                    self.y = math.ceil(self.y)
-                    distance_to_ground = abs(int(Y_STARTING_POSITION - self.y))
-                    while distance_to_ground != 0:
-                        # TODO smoother falling velocity
-                        self.y -= -(1 / 8) * (1 / 150)
-                        self.jump_velocity -= 1
-                        distance_to_ground = abs(int(Y_STARTING_POSITION - self.y))
-                        self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
+            distance_to_ground = abs(int(Y_STARTING_POSITION - self.y))
+            self.fall_vel = math.sqrt(distance_to_ground)
+            self.y -= -(self.fall_vel * abs(self.fall_vel)) * (1 / 4)
+            self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
 
-                if math.ceil(self.y) == Y_STARTING_POSITION:
-                    is_landed = True
-                    self.is_on_obstacle = True
-                    self.jump_velocity = JUMP_VELOCITY
-                    self.is_jump = False
+            if math.ceil(self.y) == Y_STARTING_POSITION:
+                self.is_on_obstacle = False
+                self.jump_velocity = JUMP_VELOCITY
+                self.is_jump = False
 
     def jump(self):
         if self.jump_velocity >= -JUMP_VELOCITY:
@@ -209,34 +203,24 @@ class Player:
                 obstacle_y = obstacle.hitbox[1]
                 obstacle_left_edge_x = obstacle.hitbox[0]
                 obstacle_right_edge_x = obstacle.hitbox[0] + obstacle.hitbox[2]
-                if obstacle_y >= char_feet_y \
+                # if obstacle is underneath char
+                obstacle_underneath_player = obstacle_y >= char_feet_y \
                         and char_left_edge_hitbox_x >= obstacle_left_edge_x \
                         and char_right_hitbox_x <= obstacle_right_edge_x \
                         and self.jump_velocity < 0 \
-                        and not self.is_on_obstacle:
-                    is_landed = False
-                    while not is_landed:
-                        self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
-                        char_feet_y = self.hitbox[1] + self.hitbox[3]
-                        # for debug:
-                        height_jump = (self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
-                        if char_feet_y - height_jump <= obstacle_y:
-                            self.y -= (self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
-                            self.jump_velocity -= 1
-                            self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
-                        else:
-                            diff = abs(int(char_feet_y - obstacle_y))
-                            while diff != 0:
-                                self.y -= -(1 / 20) * (1 / 150)
-                                self.jump_velocity -= 1
-                                diff = abs(int((self.hitbox[1] + self.hitbox[3]) - obstacle_y))
-                                self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
+                        and not self.is_on_obstacle
 
-                        if math.ceil(self.hitbox[1] + self.hitbox[3]) == obstacle_y:
-                            is_landed = True
-                            self.is_on_obstacle = True
-                            self.jump_velocity = JUMP_VELOCITY
-                            self.is_jump = False
+                if obstacle_underneath_player:
+                    distance_to_obstacle = abs(int(obstacle_y - char_feet_y))
+                    self.fall_vel = math.sqrt(distance_to_obstacle)
+                    self.y -= -(self.fall_vel * abs(self.fall_vel)) * (2 / 3)
+                    self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
+
+                    player_is_on_obstacle = math.ceil(self.hitbox[1] + self.hitbox[3]) == obstacle_y
+                    if player_is_on_obstacle:
+                        self.is_on_obstacle = True
+                        self.jump_velocity = JUMP_VELOCITY
+                        self.is_jump = False
 
                 else:
                     self.y -= (self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
