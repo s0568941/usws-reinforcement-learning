@@ -9,42 +9,42 @@ from usws_jump_and_run_game.utils.constants import *
 
 # Array mit Bildern des Characters
 walk_right_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right3.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right4.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right5.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right6.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right4.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right5.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right6.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 walk_left_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left3.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left4.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left5.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left6.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left4.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left5.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left6.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 jump_right_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpR1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpR2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpR3.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpR4.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpR1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpR2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpR3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpR4.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 jump_left_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpL1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpL2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpL3.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpL4.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpL1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpL2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpL3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpL4.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 idle_right_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleR1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleR2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleR3.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleR1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleR2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleR3.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 idle_left_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleL1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleL2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleL3.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleL1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleL2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleL3.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 
 class Player:

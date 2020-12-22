@@ -12,11 +12,17 @@ import usws_jump_and_run_game.utils.pygame_functions as pygame_f
 from usws_jump_and_run_game.utils.constants import *
 from usws_jump_and_run_game.characters.player import Player
 from usws_jump_and_run_game.environment.obstacles.platform import Platform
+from usws_jump_and_run_game.characters.hyena import Hyena
+from usws_jump_and_run_game.characters.scorpio import Scorpio
+from usws_jump_and_run_game.characters.skull import Skull
 
 player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
 platform = Platform(900, 600, 100, 30)
 obstacles = [platform]
 player.obstacles = obstacles
+hyena1 = Hyena(500, 620, 25, 40, 800)
+scorpio1 = Scorpio(300, 620, 25, 40, 500)
+skull1 = Skull(1100, 520, 25, 25, 620)
 
 clock = pygame.time.Clock()
 
@@ -36,6 +42,9 @@ def redraw_game_window():
     # Aktualisiere das Fenster (background & player)
     player.draw(pygame_f.screen)
     platform.draw(pygame_f.screen)
+    hyena1.draw(pygame_f.screen)
+    scorpio1.draw(pygame_f.screen)
+    skull1.draw(pygame_f.screen)
     pygame_f.updateDisplay()
 
 
