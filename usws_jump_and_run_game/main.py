@@ -20,8 +20,8 @@ player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
 platform = Platform(900, 600, 100, 30)
 obstacles = [platform]
 player.obstacles = obstacles
-hyena1 = Hyena(500, 620, 25, 40, 800)
-scorpio1 = Scorpio(300, 620, 25, 40, 500)
+hyena1 = Hyena(550, 620, 25, 40, 800)
+scorpio1 = Scorpio(200, 620, 25, 40, 500)
 skull1 = Skull(1100, 520, 25, 25, 620)
 
 clock = pygame.time.Clock()
@@ -68,6 +68,9 @@ while run:
         if player.x > PLAYER_STATIC_X and not player.movement_blocked:
             pygame_f.scrollBackground(player.speed, 0)
             platform.move_right()
+            skull1.adapt_to_screen_right()
+            hyena1.adapt_to_screen_right()
+            scorpio1.adapt_to_screen_right()
         else:
             pygame_f.scrollBackground(0, 0)
         player.move_left()
@@ -86,6 +89,9 @@ while run:
         if player.x > PLAYER_STATIC_X and not player.movement_blocked:
             pygame_f.scrollBackground(-player.speed, 0)
             platform.move_left()
+            skull1.adapt_to_screen_left()
+            hyena1.adapt_to_screen_left()
+            scorpio1.adapt_to_screen_left()
         else:
             pygame_f.scrollBackground(0, 0)
         player.move_right()

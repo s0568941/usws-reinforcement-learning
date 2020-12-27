@@ -45,6 +45,18 @@ class Scorpio(object):
         # Displaying the hyenas hitbox with a red rectangle
         pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
 
+    # screen moves to the right
+    def adapt_to_screen_left(self):
+        self.x += -5
+        self.path[1] += -5
+        self.path[0] += -5
+
+    # screen moves to the left
+    def adapt_to_screen_right(self):
+        self.x += 5
+        self.path[1] += 5
+        self.path[0] += 5
+
     def move(self):
         if self.speed > 0:
             if self.x + self.speed < self.path[1]:
