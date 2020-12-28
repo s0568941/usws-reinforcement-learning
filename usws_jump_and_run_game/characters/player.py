@@ -46,6 +46,17 @@ idle_left_p = [
     pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleL2.png'), (int(1.6 * 50), int(1.6 * 37))),
     pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleL3.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
+dead_img = [
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R4.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R5.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R6.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R7.png'), (int(1.6 * 50), int(1.6 * 37)))]
+
+
+
 
 class Player:
     def __init__(self, x, y, height, width):
@@ -67,6 +78,7 @@ class Player:
         self.idle_right = False
         self.idle_count = 0
         self.jump_count = 0
+        self.dead_count = 0
         self.last_dir = ''
         self.hitbox = (self.x + PLAYER_HITBOX_PADDING_X, self.y + PLAYER_HITBOX_PADDING_Y, self.height, self.width)
         self.is_on_obstacle = False
@@ -74,6 +86,7 @@ class Player:
         self.movement_blocked = False
         self.fall_vel = 0
         self.is_fall = False
+        self.is_dead = False
 
     def draw(self, screen):
         # Mithilfe von walk_count wird ein Bild aus dem Array ausgesucht, was die Bewegung animiert
@@ -230,3 +243,7 @@ class Player:
         else:
             self.jump_velocity = JUMP_VELOCITY
             self.is_jump = False
+
+    def died(self):
+        self.x = X_STARTING_POSITION
+        self.y = Y_STARTING_POSITION

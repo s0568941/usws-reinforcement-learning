@@ -47,11 +47,26 @@ def redraw_game_window():
     skull1.draw(pygame_f.screen)
     pygame_f.updateDisplay()
 
+# TODO: Sofortiges sterben des character (derzeitig muss man noch eine Taste nach der Kollision drücken, damit diese registriert wird)
+def check_collision():
+    if player.hitbox[1] < hyena1.hitbox[1] + hyena1.hitbox[3] and player.hitbox[1] + player.hitbox[3] > hyena1.hitbox[1]:
+        if player.hitbox[0] + player.hitbox[2] > hyena1.hitbox[0] and player.hitbox[0] < hyena1.hitbox[0] + hyena1.hitbox[2]:
+            player.died()
+
+    if player.hitbox[1] < skull1.hitbox[1] + skull1.hitbox[3] and player.hitbox[1] + player.hitbox[3] > skull1.hitbox[1]:
+            if player.hitbox[0] + player.hitbox[2] > skull1.hitbox[0] and player.hitbox[0] < skull1.hitbox[0] + skull1.hitbox[2]:
+                player.died()
+
+    if player.hitbox[1] < scorpio1.hitbox[1] + scorpio1.hitbox[3] and player.hitbox[1] + player.hitbox[3] > scorpio1.hitbox[1]:
+            if player.hitbox[0] + player.hitbox[2] > scorpio1.hitbox[0] and player.hitbox[0] < scorpio1.hitbox[0] + scorpio1.hitbox[2]:
+                player.died()
+
+
 
 while run:
     # erhöht die FPS-Anzahl um das Spiel fluessiger zu gestalten
     clock.tick(27)
-
+    check_collision()
     # Schaue nach ob eines der events das Spiel beenden moechte (Fensterkreuz)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
