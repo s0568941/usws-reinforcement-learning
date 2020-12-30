@@ -14,11 +14,19 @@ from usws_jump_and_run_game.characters.player import Player
 from usws_jump_and_run_game.environment.obstacles.platform import Platform
 
 player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
-platform = Platform(900, 600, 100, 30)
-obstacles = [platform]
+platform = Platform(900, 550, 100, 30)
+platform2 = Platform(1350, 600, 100, 30)
+platform3 = Platform(1050, 600, 100, 20)
+obstacles = [platform, platform2, platform3]
 player.obstacles = obstacles
 
 clock = pygame.time.Clock()
+
+# for debugging:
+counter = 0
+def dump(obj):
+    for attr in dir(obj):
+        print("obj.%s = %r" % (attr, getattr(obj, attr)))
 
 # Setup screen and background
 pygame_f.screenSize(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -35,7 +43,8 @@ run = True
 def redraw_game_window():
     # Aktualisiere das Fenster (background & player)
     player.draw(pygame_f.screen)
-    platform.draw(pygame_f.screen)
+    for obstacle in obstacles:
+        obstacle.draw(pygame_f.screen)
     pygame_f.updateDisplay()
 
 
@@ -58,10 +67,13 @@ while run:
         # Scrolling background is deactivated once player arrives at the center and proceeds to the left
         if player.x > PLAYER_STATIC_X and not player.movement_blocked:
             pygame_f.scrollBackground(player.speed, 0)
-            platform.move_right()
+            for obstacle in obstacles:
+                obstacle.move_right()
         else:
             pygame_f.scrollBackground(0, 0)
         player.move_left()
+        player.is_obstacle_underneath_player()
+        player.is_player_underneath_obstacle()
 
         if not player.is_jump:
             player.left = True
@@ -76,10 +88,13 @@ while run:
         # Scrolling background is activated once player arrives at the center
         if player.x > PLAYER_STATIC_X and not player.movement_blocked:
             pygame_f.scrollBackground(-player.speed, 0)
-            platform.move_left()
+            for obstacle in obstacles:
+                obstacle.move_left()
         else:
             pygame_f.scrollBackground(0, 0)
         player.move_right()
+        player.is_obstacle_underneath_player()
+        player.is_player_underneath_obstacle()
 
         if not player.is_jump:
             player.left = False
@@ -107,9 +122,33 @@ while run:
     else:
         player.jump()
 
-    if player.is_fall and not player.is_on_obstacle and player.y != Y_STARTING_POSITION:
+    if player.is_fall and not player.is_on_obstacle and player.y < Y_STARTING_POSITION and not player.is_colliding and not player.obstacle_underneath_player:
         player.fall_from_obstacle()
+    if player.is_landing and player.is_player_underneath_obstacle():
+        player.fall_from_obstacle()
+    if player.obstacle_underneath_player and not player.is_on_obstacle and player.is_landing:
+        player.land_on_obstacle()
+    if player.is_colliding and not player.is_landing:
+        player.collide_with_obstacle()
+    if player.is_landing and not player.is_jump:
+        player.land_on_obstacle()
+        if player.y > Y_STARTING_POSITION:
+            player.is_landing = False
+    if player.is_falling_to_ground:
+        if player.y > Y_STARTING_POSITION:
+            player.is_falling_to_ground = False
 
+    if not player.is_jump and not player.is_landing and not player.is_colliding:
+        player.check_for_vertical_obstacles()
+        player.is_player_on_obstacle()
+        if player.y != Y_STARTING_POSITION and not player.is_on_obstacle and not player.is_falling_to_ground:
+            player.y = Y_STARTING_POSITION
+            player.hitbox = (player.static_x + 30, player.y + 15, player.height, player.width)
+
+    # for debugging:
+    if counter % 1000 == 0:
+        dump(player)
+    counter += 1
     redraw_game_window()
 
 pygame.quit()
