@@ -9,42 +9,53 @@ from usws_jump_and_run_game.utils.constants import *
 
 # Array mit Bildern des Characters
 walk_right_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right3.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right4.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right5.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/right6.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right4.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right5.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/right6.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 walk_left_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left3.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left4.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left5.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/run/left6.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left4.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left5.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/run/left6.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 jump_right_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpR1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpR2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpR3.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpR4.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpR1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpR2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpR3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpR4.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 jump_left_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpL1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpL2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpL3.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/jump/jumpL4.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpL1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpL2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpL3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/jump/jumpL4.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 idle_right_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleR1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleR2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleR3.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleR1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleR2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleR3.png'), (int(1.6 * 50), int(1.6 * 37)))]
 
 idle_left_p = [
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleL1.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleL2.png'), (int(1.6 * 50), int(1.6 * 37))),
-    pygame.transform.scale(pygame.image.load('characters/pictures/idle/idleL3.png'), (int(1.6 * 50), int(1.6 * 37)))]
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleL1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleL2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/idle/idleL3.png'), (int(1.6 * 50), int(1.6 * 37)))]
+
+dead_img = [
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R1.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R2.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R3.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R4.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R5.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R6.png'), (int(1.6 * 50), int(1.6 * 37))),
+    pygame.transform.scale(pygame.image.load('characters/pictures/player/die/die_R7.png'), (int(1.6 * 50), int(1.6 * 37)))]
+
+
 
 
 class Player:
@@ -67,6 +78,7 @@ class Player:
         self.idle_right = False
         self.idle_count = 0
         self.jump_count = 0
+        self.dead_count = 0
         self.last_dir = ''
         self.hitbox = (self.x + PLAYER_HITBOX_PADDING_X, self.y + PLAYER_HITBOX_PADDING_Y, self.height, self.width)
         self.is_on_obstacle = False
@@ -82,6 +94,7 @@ class Player:
         self.player_underneath_obstacle = False
         self.is_colliding = False
         self.index_above_obstacle = None
+        self.is_dead = False
 
     def draw(self, screen):
         # Mithilfe von walk_count wird ein Bild aus dem Array ausgesucht, was die Bewegung animiert
@@ -401,3 +414,7 @@ class Player:
         else:
             self.jump_velocity = JUMP_VELOCITY
             self.is_jump = False
+
+    def died(self):
+        self.x = X_STARTING_POSITION
+        self.y = Y_STARTING_POSITION

@@ -12,6 +12,9 @@ import usws_jump_and_run_game.utils.pygame_functions as pygame_f
 from usws_jump_and_run_game.utils.constants import *
 from usws_jump_and_run_game.characters.player import Player
 from usws_jump_and_run_game.environment.obstacles.platform import Platform
+from usws_jump_and_run_game.characters.hyena import Hyena
+from usws_jump_and_run_game.characters.scorpio import Scorpio
+from usws_jump_and_run_game.characters.skull import Skull
 
 player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
 platform = Platform(900, 550, 100, 30)
@@ -19,6 +22,9 @@ platform2 = Platform(1350, 600, 100, 30)
 platform3 = Platform(1050, 600, 100, 20)
 obstacles = [platform, platform2, platform3]
 player.obstacles = obstacles
+hyena1 = Hyena(550, 620, 25, 40, 800)
+scorpio1 = Scorpio(200, 620, 25, 40, 500)
+skull1 = Skull(1100, 520, 25, 25, 620)
 
 clock = pygame.time.Clock()
 
@@ -45,13 +51,31 @@ def redraw_game_window():
     player.draw(pygame_f.screen)
     for obstacle in obstacles:
         obstacle.draw(pygame_f.screen)
+    hyena1.draw(pygame_f.screen)
+    scorpio1.draw(pygame_f.screen)
+    skull1.draw(pygame_f.screen)
     pygame_f.updateDisplay()
+
+# TODO: Sofortiges sterben des character (derzeitig muss man noch eine Taste nach der Kollision drücken, damit diese registriert wird)
+def check_collision():
+    if player.hitbox[1] < hyena1.hitbox[1] + hyena1.hitbox[3] and player.hitbox[1] + player.hitbox[3] > hyena1.hitbox[1]:
+        if player.hitbox[0] + player.hitbox[2] > hyena1.hitbox[0] and player.hitbox[0] < hyena1.hitbox[0] + hyena1.hitbox[2]:
+            player.died()
+
+    if player.hitbox[1] < skull1.hitbox[1] + skull1.hitbox[3] and player.hitbox[1] + player.hitbox[3] > skull1.hitbox[1]:
+            if player.hitbox[0] + player.hitbox[2] > skull1.hitbox[0] and player.hitbox[0] < skull1.hitbox[0] + skull1.hitbox[2]:
+                player.died()
+
+    if player.hitbox[1] < scorpio1.hitbox[1] + scorpio1.hitbox[3] and player.hitbox[1] + player.hitbox[3] > scorpio1.hitbox[1]:
+            if player.hitbox[0] + player.hitbox[2] > scorpio1.hitbox[0] and player.hitbox[0] < scorpio1.hitbox[0] + scorpio1.hitbox[2]:
+                player.died()
+
 
 
 while run:
     # erhöht die FPS-Anzahl um das Spiel fluessiger zu gestalten
     clock.tick(27)
-
+    check_collision()
     # Schaue nach ob eines der events das Spiel beenden moechte (Fensterkreuz)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -69,6 +93,9 @@ while run:
             pygame_f.scrollBackground(player.speed, 0)
             for obstacle in obstacles:
                 obstacle.move_right()
+            skull1.adapt_to_screen_right()
+            hyena1.adapt_to_screen_right()
+            scorpio1.adapt_to_screen_right()
         else:
             pygame_f.scrollBackground(0, 0)
         player.move_left()
@@ -90,6 +117,9 @@ while run:
             pygame_f.scrollBackground(-player.speed, 0)
             for obstacle in obstacles:
                 obstacle.move_left()
+            skull1.adapt_to_screen_left()
+            hyena1.adapt_to_screen_left()
+            scorpio1.adapt_to_screen_left()
         else:
             pygame_f.scrollBackground(0, 0)
         player.move_right()
