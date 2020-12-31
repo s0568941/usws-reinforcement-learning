@@ -17,14 +17,22 @@ from usws_jump_and_run_game.characters.scorpio import Scorpio
 from usws_jump_and_run_game.characters.skull import Skull
 
 player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
-platform = Platform(900, 600, 100, 30)
-obstacles = [platform]
+platform = Platform(900, 550, 100, 30)
+platform2 = Platform(1350, 600, 100, 30)
+platform3 = Platform(1050, 600, 100, 20)
+obstacles = [platform, platform2, platform3]
 player.obstacles = obstacles
 hyena1 = Hyena(550, 620, 25, 40, 800, "Hyena1")
 scorpio1 = Scorpio(200, 620, 25, 40, 500, "Scorpio1")
 skull1 = Skull(1100, 520, 25, 25, 620, "Skull1")
 
 clock = pygame.time.Clock()
+
+# for debugging:
+counter = 0
+def dump(obj):
+    for attr in dir(obj):
+        print("obj.%s = %r" % (attr, getattr(obj, attr)))
 
 # Setup screen and background
 pygame_f.screenSize(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -59,7 +67,8 @@ return_text = pygame_f.makeLabel(RETURN_TEXT, 35, 400, 350, "black", "Arial", "c
 def redraw_game_window():
     # Aktualisiere das Fenster (background & player)
     player.draw(pygame_f.screen)
-    platform.draw(pygame_f.screen)
+    for obstacle in obstacles:
+        obstacle.draw(pygame_f.screen)
     hyena1.draw(pygame_f.screen)
     scorpio1.draw(pygame_f.screen)
     skull1.draw(pygame_f.screen)
@@ -132,9 +141,6 @@ def start_screen():
     pygame_f.showLabel(nico_text)
     pygame_f.updateDisplay()
 
-
-
-
 #Hauptstartscreen immer true bei run
 while main_program_run:
     start_screen()
@@ -171,13 +177,16 @@ while main_program_run:
                 # Scrolling background is deactivated once player arrives at the center and proceeds to the left
                 if player.x > PLAYER_STATIC_X and not player.movement_blocked:
                     pygame_f.scrollBackground(player.speed, 0)
-                    platform.move_right()
+                    for obstacle in obstacles:
+                        obstacle.move_right()
                     skull1.adapt_to_screen_right()
                     hyena1.adapt_to_screen_right()
                     scorpio1.adapt_to_screen_right()
                 else:
                     pygame_f.scrollBackground(0, 0)
                 player.move_left()
+                player.is_obstacle_underneath_player()
+                player.is_player_underneath_obstacle()
 
                 if not player.is_jump:
                     player.left = True
@@ -192,13 +201,16 @@ while main_program_run:
                 # Scrolling background is activated once player arrives at the center
                 if player.x > PLAYER_STATIC_X and not player.movement_blocked:
                     pygame_f.scrollBackground(-player.speed, 0)
-                    platform.move_left()
+                    for obstacle in obstacles:
+                        obstacle.move_left()
                     skull1.adapt_to_screen_left()
                     hyena1.adapt_to_screen_left()
                     scorpio1.adapt_to_screen_left()
                 else:
                     pygame_f.scrollBackground(0, 0)
                 player.move_right()
+                player.is_obstacle_underneath_player()
+                player.is_player_underneath_obstacle()
 
                 if not player.is_jump:
                     player.left = False
@@ -206,7 +218,6 @@ while main_program_run:
                     player.idle_left = False
                     player.idle_right = True
                     player.last_dir = 'r'
-
             else:
                 pygame_f.scrollBackground(0, 0)
                 player.left = False
@@ -226,13 +237,37 @@ while main_program_run:
             else:
                 player.jump()
 
-            if player.is_fall and not player.is_on_obstacle and player.y != Y_STARTING_POSITION:
+            if player.is_fall and not player.is_on_obstacle and player.y < Y_STARTING_POSITION and not player.is_colliding and not player.obstacle_underneath_player:
                 player.fall_from_obstacle()
+            if player.is_landing and player.is_player_underneath_obstacle():
+                player.fall_from_obstacle()
+            if player.obstacle_underneath_player and not player.is_on_obstacle and player.is_landing:
+                player.land_on_obstacle()
+            if player.is_colliding and not player.is_landing:
+                player.collide_with_obstacle()
+            if player.is_landing and not player.is_jump:
+                player.land_on_obstacle()
+                if player.y > Y_STARTING_POSITION:
+                    player.is_landing = False
+            if player.is_falling_to_ground:
+                if player.y > Y_STARTING_POSITION:
+                    player.is_falling_to_ground = False
+
+            if not player.is_jump and not player.is_landing and not player.is_colliding:
+                player.check_for_vertical_obstacles()
+                player.is_player_on_obstacle()
+                if player.y != Y_STARTING_POSITION and not player.is_on_obstacle and not player.is_falling_to_ground:
+                    player.y = Y_STARTING_POSITION
+                    player.hitbox = (player.static_x + 30, player.y + 15, player.height, player.width)
+
+                # for debugging:
+            if counter % 1000 == 0:
+                dump(player)
+            counter += 1
 
             redraw_game_window()
 
         #END OF 1.
-
 
 
 
@@ -248,6 +283,5 @@ while main_program_run:
                 main_program_run = False
 
         #END OF 2.
-
 
 pygame.quit()
