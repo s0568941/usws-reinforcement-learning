@@ -23,7 +23,8 @@ class Hyena(object):
         pygame.transform.scale(pygame.image.load('characters/pictures/enemies/hyena/Hyena5R.png'), (int(1.2 * 44), int(1.2 * 27))),
         pygame.transform.scale(pygame.image.load('characters/pictures/enemies/hyena/Hyena6R.png'), (int(1.2 * 44), int(1.2 * 27)))]
 
-    def __init__(self, x, y, width, height, end):
+    def __init__(self, x, y, width, height, end, name):
+        self.name = name
         self.x = x
         self.y = y
         self.width = width

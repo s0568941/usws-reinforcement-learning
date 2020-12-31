@@ -244,6 +244,6 @@ class Player:
             self.jump_velocity = JUMP_VELOCITY
             self.is_jump = False
 
-    def died(self):
+    def reset_player(self):
         self.x = X_STARTING_POSITION
         self.y = Y_STARTING_POSITION

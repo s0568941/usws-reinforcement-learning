@@ -18,7 +18,8 @@ class Skull(object):
 
 
 
-    def __init__(self, x, y, width, height, end):
+    def __init__(self, x, y, width, height, end, name):
+        self.name = name
         self.x = x
         self.y = y
         self.width = width

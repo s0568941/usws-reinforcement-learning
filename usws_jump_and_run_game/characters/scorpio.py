@@ -19,7 +19,8 @@ class Scorpio(object):
         pygame.transform.scale(pygame.image.load('characters/pictures/enemies/scorpio/Scorpio4R.png'), (int(1 * 44), int(1 * 27)))]
 
 
-    def __init__(self, x, y, width, height, end):
+    def __init__(self, x, y, width, height, end, name):
+        self.name = name
         self.x = x
         self.y = y
         self.width = width
