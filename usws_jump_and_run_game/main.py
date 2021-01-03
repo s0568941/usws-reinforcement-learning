@@ -12,6 +12,7 @@ import usws_jump_and_run_game.utils.pygame_functions as pygame_f
 from usws_jump_and_run_game.utils.constants import *
 from usws_jump_and_run_game.characters.player import Player
 from usws_jump_and_run_game.environment.obstacles.platform import Platform
+from usws_jump_and_run_game.environment.obstacles.spike import Spike
 from usws_jump_and_run_game.characters.hyena import Hyena
 from usws_jump_and_run_game.characters.scorpio import Scorpio
 from usws_jump_and_run_game.characters.skull import Skull
@@ -20,7 +21,8 @@ player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
 platform = Platform(900, 550, 100, 30)
 platform2 = Platform(1350, 600, 100, 30)
 platform3 = Platform(1050, 600, 100, 20)
-obstacles = [platform, platform2, platform3]
+spike = Spike(1000, 600, 50, 50)
+obstacles = [platform, platform2, platform3, spike]
 player.obstacles = obstacles
 hyena1 = Hyena(550, 620, 25, 40, 800, "Hyena1")
 scorpio1 = Scorpio(200, 620, 25, 40, 500, "Scorpio1")
@@ -80,6 +82,9 @@ def check_collision(player, enemy):
         if player.hitbox[0] + player.hitbox[2] > enemy.hitbox[0] and player.hitbox[0] < enemy.hitbox[0] + enemy.hitbox[2]:
             game_over = True
             game_over_screen()
+    elif player.is_dead:
+        game_over = True
+        game_over_screen()
     else:
         game_over = False
 

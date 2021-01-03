@@ -3,6 +3,8 @@
 import pygame
 import math
 
+from usws_jump_and_run_game.environment.obstacles.spike import Spike
+
 pygame.init()
 
 from usws_jump_and_run_game.utils.constants import *
@@ -175,8 +177,12 @@ class Player:
             if right:
                 if obstacle_x <= next_x_coords_right_side <= obstacle_total_width \
                         and obstacle_on_same_level:
-                    self.movement_blocked = True
-                    return self.movement_blocked
+                    if type(obstacle) is Spike:
+                        self.is_dead = True
+                        return self.movement_blocked
+                    else:
+                        self.movement_blocked = True
+                        return self.movement_blocked
             else:
                 if obstacle_total_width >= next_x_coords_left_side >= obstacle_x \
                         and obstacle_on_same_level:
@@ -200,8 +206,12 @@ class Player:
                                                    or obstacle.x <= (moving_hitbox_x +
                                                                      self.hitbox[2]) <= obstacle_right_edge
                 if player_is_between_platform_edges:
-                    self.is_on_obstacle = True
-                    self.is_fall = False
+                    if type(obstacle) is Spike:
+                        self.is_dead = True
+                        return self.is_on_obstacle
+                    else:
+                        self.is_on_obstacle = True
+                        self.is_fall = False
                     return self.is_on_obstacle
                 elif idx != len(self.obstacles) - 1:
                     continue
