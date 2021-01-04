@@ -132,7 +132,7 @@ class Player:
         # TODO hitbox will need to be moving with x instead of static_x
         self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
         # Displaying the players hitbox with a red rectangle
-        pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
+        #pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
 
     def move_right(self):
         self.check_for_horizontal_obstacles(right=True)
@@ -429,7 +429,7 @@ class Player:
                 self.land_on_obstacle()
 
             elif not self.obstacle_underneath_player and not self.player_underneath_obstacle or self.is_on_previous_obstacle:
-                self.y -= (self.jump_velocity * abs(self.jump_velocity)) * (1 / 2)
+                self.y -= (self.jump_velocity * abs(self.jump_velocity)) * (1 / 3)
                 self.jump_velocity -= 1
                 self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
         else:

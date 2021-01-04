@@ -17,16 +17,73 @@ from usws_jump_and_run_game.characters.hyena import Hyena
 from usws_jump_and_run_game.characters.scorpio import Scorpio
 from usws_jump_and_run_game.characters.skull import Skull
 
+#player
 player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
-platform = Platform(900, 550, 100, 30)
-platform2 = Platform(1350, 600, 100, 30)
-platform3 = Platform(1050, 600, 100, 20)
-spike = Spike(1000, 620, 50, 30)
-obstacles = [platform, platform2, platform3, spike]
+
+#LEVEL
+
+#Checkpoint 1 - Till third platform
+scorpio1 = Scorpio(150, 620, 25, 40, 300, "Scorpio1")
+platform = Platform(350, 600, 80, 50)
+hyena1 = Hyena(500, 620, 25, 40, 800, "Hyena1")
+platform2 = Platform(900, 580, 100, 70)
+#spike = Spike(1230, 620, 50, 30)
+#spike2 = Spike(1230, 620, 50, 30)
+skull1 = Skull(1020, 440, 25, 25, 580, "Skull1")
+platform3 = Platform(1080, 580, 100, 70)
+
+#Checkpoint 2 - Till Heart collectable
+platform4 = Platform(1500, 560, 120, 90)
+scorpio2 = Scorpio(1500, 540, 25, 40, 1600, "Scorpio2")
+
+#small islands
+platform5 = Platform(1680, 560, 60, 30)
+platform6 = Platform(1800, 560, 60, 30)
+
+platform7 = Platform(1920, 560, 600, 30)
+hyena2 = Hyena(1920, 525, 25, 40, 2120, "Hyena2")
+platform8 = Platform(2050, 480, 340, 30)
+platform9 = Platform(2115, 400, 210, 30)
+platform10 = Platform(2147, 320, 146, 30)
+platform11 = Platform(2180, 240, 80, 440)#letzter wert auf 440 #treelike
+skull2 = Skull(2200, 100, 25, 25, 180, "Skull2")
+hyena3 = Hyena(2260, 525, 25, 40, 2460, "Hyena3")
+
+#Checkpoint 3 - Till Skull platform
+
+#small islands
+platform12 = Platform(2580, 560, 60, 30)
+platform13 = Platform(2700, 560, 60, 30)
+
+platform14 = Platform(2820, 560, 600, 100) #skull island
+skull3 = Skull(2900, 420, 25, 25, 520, "Skull3")
+skull4 = Skull(3100, 450, 25, 25, 520, "Skull4")
+skull5 = Skull(3300, 420, 25, 25, 520, "Skull5")
+# two spikes
+
+# Checkpoint 4 - till last platform section
+hyena4 = Hyena(3420, 620, 25, 40, 3820, "Hyena4")
+#spike
+hyena5 = Hyena(3900, 620, 25, 40, 4100, "Hyena5")
+scorpio3 = Scorpio(3900, 620, 25, 40, 4100, "Scorpio3")
+
+# Checkpoint 5 - till end
+platform15 = Platform(4200, 560, 30, 100)
+#spike
+platform16 = Platform(4300, 600, 30, 60)
+#spike
+platform17 = Platform(4400, 560, 30, 100)
+skull6 = Skull(4395, 460, 25, 25, 600, "Skull6")
+#spike
+platform18 = Platform(4500, 640, 30, 20)
+#spike
+platform19 = Platform(4600, 560, 30, 100)
+
+
+
+
+obstacles = [platform, platform2, platform3, platform4, platform5,platform6,platform7,platform8,platform9,platform10,platform11,platform12,platform13,platform14,platform15, platform16, platform17, platform18,platform19]
 player.obstacles = obstacles
-hyena1 = Hyena(550, 620, 25, 40, 800, "Hyena1")
-scorpio1 = Scorpio(200, 620, 25, 40, 500, "Scorpio1")
-skull1 = Skull(1100, 520, 25, 25, 620, "Skull1")
 
 clock = pygame.time.Clock()
 
@@ -64,7 +121,6 @@ kill_text = pygame_f.makeLabel(KILL_TEXT, 40, 500, 300, "black", "Arial", "clear
 return_text = pygame_f.makeLabel(RETURN_TEXT, 35, 400, 350, "black", "Arial", "clear")
 
 
-# Auslagerung der Zeichenaktionen
 
 def redraw_game_window():
     # Aktualisiere das Fenster (background & player)
@@ -74,6 +130,17 @@ def redraw_game_window():
     hyena1.draw(pygame_f.screen)
     scorpio1.draw(pygame_f.screen)
     skull1.draw(pygame_f.screen)
+    scorpio2.draw(pygame_f.screen)
+    hyena2.draw(pygame_f.screen)
+    skull2.draw(pygame_f.screen)
+    hyena3.draw(pygame_f.screen)
+    skull3.draw(pygame_f.screen)
+    skull4.draw(pygame_f.screen)
+    skull5.draw(pygame_f.screen)
+    hyena4.draw(pygame_f.screen)
+    hyena5.draw(pygame_f.screen)
+    scorpio3.draw(pygame_f.screen)
+    skull6.draw(pygame_f.screen)
     pygame_f.updateDisplay()
 
 def check_collision(player, enemy):
@@ -156,7 +223,6 @@ while main_program_run:
     elif keys[pygame.K_SPACE]:
         ki_run = True
 
-
     #1. Spiel starten manuell
     while game_run:
         # erhöht die FPS-Anzahl um das Spiel fluessiger zu gestalten
@@ -166,6 +232,18 @@ while main_program_run:
         check_collision(player, hyena1)
         check_collision(player, scorpio1)
         check_collision(player, skull1)
+        check_collision(player, scorpio2)
+        check_collision(player, hyena2)
+        check_collision(player, skull2)
+        check_collision(player, hyena3)
+        check_collision(player, skull3)
+        check_collision(player, skull4)
+        check_collision(player, skull5)
+        check_collision(player, hyena4)
+        check_collision(player, hyena5)
+        check_collision(player, scorpio3)
+        check_collision(player, skull6)
+
 
         # Schaue nach ob eines der events das Spiel beenden moechte (Fensterkreuz)
         for event in pygame.event.get():
@@ -184,9 +262,23 @@ while main_program_run:
                     pygame_f.scrollBackground(player.speed, 0)
                     for obstacle in obstacles:
                         obstacle.move_right()
+                    #ToDo: Enemy parent class to minimize code
                     skull1.adapt_to_screen_right()
                     hyena1.adapt_to_screen_right()
                     scorpio1.adapt_to_screen_right()
+                    scorpio2.adapt_to_screen_right()
+                    hyena2.adapt_to_screen_right()
+                    skull2.adapt_to_screen_right()
+                    hyena3.adapt_to_screen_right()
+                    skull3.adapt_to_screen_right()
+                    skull4.adapt_to_screen_right()
+                    skull5.adapt_to_screen_right()
+                    hyena4.adapt_to_screen_right()
+                    hyena5.adapt_to_screen_right()
+                    scorpio3.adapt_to_screen_right()
+                    skull6.adapt_to_screen_right()
+
+
                 else:
                     pygame_f.scrollBackground(0, 0)
                 player.move_left()
@@ -208,9 +300,22 @@ while main_program_run:
                     pygame_f.scrollBackground(-player.speed, 0)
                     for obstacle in obstacles:
                         obstacle.move_left()
+                    # ToDo: Enemy parent class to minimize code
                     skull1.adapt_to_screen_left()
                     hyena1.adapt_to_screen_left()
                     scorpio1.adapt_to_screen_left()
+                    scorpio2.adapt_to_screen_left()
+                    hyena2.adapt_to_screen_left()
+                    skull2.adapt_to_screen_left()
+                    hyena3.adapt_to_screen_left()
+                    skull3.adapt_to_screen_left()
+                    skull4.adapt_to_screen_left()
+                    skull5.adapt_to_screen_left()
+                    hyena4.adapt_to_screen_left()
+                    hyena5.adapt_to_screen_left()
+                    scorpio3.adapt_to_screen_left()
+                    skull6.adapt_to_screen_left()
+
                 else:
                     pygame_f.scrollBackground(0, 0)
                 player.move_right()

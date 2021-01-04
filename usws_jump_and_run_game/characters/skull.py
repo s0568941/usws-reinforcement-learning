@@ -41,7 +41,7 @@ class Skull(object):
 
         self.hitbox = (self.x + 9, self.y + 9, self.height, self.width)
         # Displaying the hyenas hitbox with a red rectangle
-        pygame.draw.rect(screen, (0, 255, 0), self.hitbox, 2)
+        #pygame.draw.rect(screen, (0, 255, 0), self.hitbox, 2)
 
     def adapt_to_screen_left(self):
         self.x -= self.speed_x
