@@ -3,6 +3,7 @@
 import pygame
 import math
 
+from usws_jump_and_run_game.environment.obstacles.platform import Platform
 from usws_jump_and_run_game.environment.obstacles.spike import Spike
 
 pygame.init()
@@ -186,8 +187,12 @@ class Player:
             else:
                 if obstacle_total_width >= next_x_coords_left_side >= obstacle_x \
                         and obstacle_on_same_level:
-                    self.movement_blocked = True
-                    return self.movement_blocked
+                    if type(obstacle) is Spike:
+                        self.is_dead = True
+                        return self.movement_blocked
+                    else:
+                        self.movement_blocked = True
+                        return self.movement_blocked
 
         self.movement_blocked = False
         return self.movement_blocked
@@ -200,6 +205,7 @@ class Player:
             moving_hitbox_y = self.y + PLAYER_HITBOX_PADDING_Y
             # if players feet align with surface of obstacle:
             is_on_obst = is_on_obstacle if is_on_obstacle is not None else self.is_on_obstacle
+            is_on_obst = True if type(obstacle) is Spike else is_on_obst
             if math.ceil(moving_hitbox_y + self.hitbox[3]) == obstacle.y or is_on_obst:
                 obstacle_right_edge = obstacle.x + obstacle.hitbox[2]
                 player_is_between_platform_edges = obstacle.x <= moving_hitbox_x < obstacle_right_edge \
@@ -276,6 +282,9 @@ class Player:
                 elif math.ceil(self.y) > Y_STARTING_POSITION:
                     self.is_falling_to_ground = False
 
+            self.is_player_on_obstacle()
+
+
 
     def is_obstacle_underneath_player(self):
         global obstacle_underneath_player
@@ -292,7 +301,7 @@ class Player:
                                          and char_right_hitbox_x <= obstacle_right_edge_x
 
             is_landing_or_landed = self.jump_velocity < 0 or not self.is_jump
-            if obstacle_underneath_player and is_landing_or_landed:
+            if obstacle_underneath_player and is_landing_or_landed and type(obstacle) is Platform:
                 self.obstacle_underneath_player = obstacle_underneath_player
                 if self.index_below_obstacle is not None:
                     if self.index_below_obstacle == idx and self.is_on_obstacle:
@@ -306,6 +315,11 @@ class Player:
                 return obstacle_underneath_player
             elif idx != len(self.obstacles) - 1:
                 continue  # check the other obstacles
+            elif idx == len(self.obstacles) - 1 and self.y != Y_STARTING_POSITION:
+                # if no obstacle underneath player and player is not on the ground: player falls
+                self.is_fall = True
+                self.obstacle_underneath_player = False
+                self.index_below_obstacle = None
             elif idx == len(self.obstacles) - 1:
                 self.obstacle_underneath_player = False
                 self.index_below_obstacle = None
@@ -395,6 +409,10 @@ class Player:
             self.is_landing = True
             self.is_jump = False
             obstacle = self.obstacles[self.index_below_obstacle]
+            if type(obstacle) is Spike:
+                self.is_landing = False
+                self.obstacle_underneath_player = False
+                return
             char_feet_y = self.hitbox[1] + self.hitbox[3]
             obstacle_y = obstacle.y
 

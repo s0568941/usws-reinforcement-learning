@@ -21,8 +21,9 @@ player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
 platform = Platform(900, 550, 100, 30)
 platform2 = Platform(1350, 600, 100, 30)
 platform3 = Platform(1050, 600, 100, 20)
-spike = Spike(1000, 620, 50, 30)
-obstacles = [platform, platform2, platform3, spike]
+spike = Spike(1000, 620, 40, 30)
+spike2 = Spike(800, 620, 40, 30)
+obstacles = [platform, platform2, platform3, spike, spike2]
 player.obstacles = obstacles
 hyena1 = Hyena(550, 620, 25, 40, 800, "Hyena1")
 scorpio1 = Scorpio(200, 620, 25, 40, 500, "Scorpio1")
@@ -264,6 +265,9 @@ while main_program_run:
                 if player.y != Y_STARTING_POSITION and not player.is_on_obstacle and not player.is_falling_to_ground:
                     player.y = Y_STARTING_POSITION
                     player.hitbox = (player.static_x + 30, player.y + 15, player.height, player.width)
+
+            player.is_obstacle_underneath_player()
+            player.is_player_on_obstacle()
 
                 # for debugging:
             if counter % 1000 == 0:
