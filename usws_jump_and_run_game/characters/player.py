@@ -200,15 +200,24 @@ class Player:
             moving_hitbox_y = self.y + PLAYER_HITBOX_PADDING_Y
             # if players feet align with surface of obstacle:
             is_on_obst = is_on_obstacle if is_on_obstacle is not None else self.is_on_obstacle
-            if math.ceil(moving_hitbox_y + self.hitbox[3]) == obstacle.hitbox[1] or is_on_obst:
+            if math.ceil(moving_hitbox_y + self.hitbox[3]) == obstacle.y or is_on_obst:
                 obstacle_right_edge = obstacle.x + obstacle.hitbox[2]
                 player_is_between_platform_edges = obstacle.x <= moving_hitbox_x < obstacle_right_edge \
                                                    or obstacle.x <= (moving_hitbox_x +
                                                                      self.hitbox[2]) <= obstacle_right_edge
                 if player_is_between_platform_edges:
                     if type(obstacle) is Spike:
-                        self.is_dead = True
-                        return self.is_on_obstacle
+                        char_feet_y = math.ceil(self.y + PLAYER_HITBOX_PADDING_Y + self.hitbox[3])
+                        obstacle_bottom = obstacle.y + obstacle.hitbox[3]
+                        obstacle_on_same_level = char_feet_y >= obstacle.y and obstacle_bottom > self.y + PLAYER_HITBOX_PADDING_Y
+                        if obstacle_on_same_level:
+                            self.is_dead = True
+                            self.movement_blocked = True
+                            self.is_on_obstacle = False
+                            return self.is_on_obstacle
+                        else:
+                            self.is_on_obstacle = False
+                            self.is_fall = False
                     else:
                         self.is_on_obstacle = True
                         self.is_fall = False
@@ -256,12 +265,14 @@ class Player:
 
                 if math.ceil(self.y) == Y_STARTING_POSITION:
                     self.y = math.ceil(self.y)
+                    self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
                     self.is_on_obstacle = False
                     self.is_landing = False
                     self.jump_velocity = JUMP_VELOCITY
                     self.is_jump = False
                     self.is_fall = False
                     self.is_falling_to_ground = False
+                    self.check_for_vertical_obstacles(False)
                 elif math.ceil(self.y) > Y_STARTING_POSITION:
                     self.is_falling_to_ground = False
 
@@ -278,10 +289,10 @@ class Player:
 
             obstacle_underneath_player = obstacle_y >= char_feet_y \
                                          and char_left_edge_hitbox_x >= obstacle_left_edge_x \
-                                         and char_right_hitbox_x <= obstacle_right_edge_x \
-                                         and self.jump_velocity < 0
+                                         and char_right_hitbox_x <= obstacle_right_edge_x
 
-            if obstacle_underneath_player:
+            is_landing_or_landed = self.jump_velocity < 0 or not self.is_jump
+            if obstacle_underneath_player and is_landing_or_landed:
                 self.obstacle_underneath_player = obstacle_underneath_player
                 if self.index_below_obstacle is not None:
                     if self.index_below_obstacle == idx and self.is_on_obstacle:
