@@ -27,62 +27,71 @@ scorpio1 = Scorpio(150, 620, 25, 40, 300, "Scorpio1")
 platform = Platform(350, 600, 80, 50)
 hyena1 = Hyena(500, 620, 25, 40, 800, "Hyena1")
 platform2 = Platform(900, 580, 100, 70)
-#spike = Spike(1230, 620, 50, 30)
-#spike2 = Spike(1230, 620, 50, 30)
+spike = Spike(1000, 620, 80, 30)
 skull1 = Skull(1020, 440, 25, 25, 580, "Skull1")
 platform3 = Platform(1080, 580, 100, 70)
 
 #Checkpoint 2 - Till Heart collectable
 platform4 = Platform(1500, 560, 120, 90)
-scorpio2 = Scorpio(1500, 540, 25, 40, 1600, "Scorpio2")
+scorpio2 = Scorpio(1500, 540, 25, 40, 1590, "Scorpio2")
 
 #small islands
+spike2 = Spike(1620, 620, 60, 30)
 platform5 = Platform(1680, 560, 60, 30)
+spike3 = Spike(1740, 620, 60, 30)
 platform6 = Platform(1800, 560, 60, 30)
+spike4 = Spike(1860, 620, 60, 30)
 
 platform7 = Platform(1920, 560, 600, 30)
 hyena2 = Hyena(1920, 525, 25, 40, 2120, "Hyena2")
 platform8 = Platform(2050, 480, 340, 30)
+spike5 = Spike(2125, 450, 50, 30)
+spike6 = Spike(2265, 450, 50, 30)
 platform9 = Platform(2115, 400, 210, 30)
 platform10 = Platform(2147, 320, 146, 30)
-platform11 = Platform(2180, 240, 80, 440)#letzter wert auf 440 #treelike
+platform11 = Platform(2180, 240, 80, 440) #tree
 skull2 = Skull(2200, 100, 25, 25, 180, "Skull2")
 hyena3 = Hyena(2260, 525, 25, 40, 2460, "Hyena3")
 
 #Checkpoint 3 - Till Skull platform
 
 #small islands
+spike7 = Spike(2520, 620, 60, 30)
 platform12 = Platform(2580, 560, 60, 30)
+spike8 = Spike(2640, 620, 60, 30)
 platform13 = Platform(2700, 560, 60, 30)
+spike9 = Spike(2755, 620, 60, 30)
 
 platform14 = Platform(2820, 560, 600, 100) #skull island
 skull3 = Skull(2900, 420, 25, 25, 520, "Skull3")
+spike10 = Spike(3000, 530, 50, 30)
 skull4 = Skull(3100, 450, 25, 25, 520, "Skull4")
+spike11 = Spike(3200, 530, 50, 30)
 skull5 = Skull(3300, 420, 25, 25, 520, "Skull5")
-# two spikes
+
 
 # Checkpoint 4 - till last platform section
-hyena4 = Hyena(3420, 620, 25, 40, 3820, "Hyena4")
-#spike
-hyena5 = Hyena(3900, 620, 25, 40, 4100, "Hyena5")
-scorpio3 = Scorpio(3900, 620, 25, 40, 4100, "Scorpio3")
+hyena4 = Hyena(3420, 620, 25, 40, 3780, "Hyena4")
+spike12 = Spike(3820, 640, 60, 30)
+hyena5 = Hyena(3900, 620, 25, 40, 4160, "Hyena5")
+scorpio3 = Scorpio(3900, 620, 25, 40, 4160, "Scorpio3")
 
 # Checkpoint 5 - till end
 platform15 = Platform(4200, 560, 30, 100)
-#spike
+spike13 = Spike(4230, 640, 70, 30)
 platform16 = Platform(4300, 600, 30, 60)
-#spike
+spike14 = Spike(4330, 640, 70, 30)
 platform17 = Platform(4400, 560, 30, 100)
-skull6 = Skull(4395, 460, 25, 25, 600, "Skull6")
-#spike
+skull6 = Skull(4395, 400, 25, 25, 520, "Skull6")
+spike15 = Spike(4430, 640, 70, 30)
 platform18 = Platform(4500, 640, 30, 20)
-#spike
+spike16 = Spike(4530, 640, 70, 30)
 platform19 = Platform(4600, 560, 30, 100)
 
 
 
 
-obstacles = [platform, platform2, platform3, platform4, platform5,platform6,platform7,platform8,platform9,platform10,platform11,platform12,platform13,platform14,platform15, platform16, platform17, platform18,platform19]
+obstacles = [platform, platform2, platform3, platform4, platform5,platform6,platform7,platform8,platform9,platform10,platform11,platform12,platform13,platform14,platform15, platform16, platform17, platform18,platform19, spike, spike2, spike3, spike4, spike5, spike6, spike7, spike8, spike10, spike11, spike12, spike13,spike14, spike15, spike16]
 player.obstacles = obstacles
 
 clock = pygame.time.Clock()
