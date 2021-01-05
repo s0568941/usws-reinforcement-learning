@@ -4,7 +4,9 @@ import pygame
 
 pygame.init()
 
-class Skull(object):
+from usws_jump_and_run_game.characters.enemy import Enemy
+
+class Skull(Enemy):
 
     skull_left = [
         pygame.transform.scale(pygame.image.load('characters/pictures/enemies/skull/skull1L.png'), (int(1.75 * 25), int(1.75 * 25))),
@@ -16,20 +18,12 @@ class Skull(object):
         pygame.transform.scale(pygame.image.load('characters/pictures/enemies/skull/skull7L.png'), (int(1.75 * 25), int(1.75 * 25))),
         pygame.transform.scale(pygame.image.load('characters/pictures/enemies/skull/skull8L.png'), (int(1.75 * 25), int(1.75 * 25)))]
 
-
-
-    def __init__(self, x, y, width, height, end, name):
-        self.name = name
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.end = end
+    def __init__(self, x, y, width, height, end):
+        super().__init__(x, y, width, height, end)
         self.path = [self.y, self.end]
-        self.walk_count = 0
         self.speed_x = 5
         self.speed_y = 2
-        self.hitbox = (self.x, self.y, self.height, self.width)
+        self.hitbox = (self.x + 9, self.y + 9, self.height, self.width)
 
     def draw(self, screen):
         self.move()
@@ -41,7 +35,7 @@ class Skull(object):
 
         self.hitbox = (self.x + 9, self.y + 9, self.height, self.width)
         # Displaying the hyenas hitbox with a red rectangle
-        #pygame.draw.rect(screen, (0, 255, 0), self.hitbox, 2)
+        # pygame.draw.rect(screen, (0, 255, 0), self.hitbox, 2)
 
     def adapt_to_screen_left(self):
         self.x -= self.speed_x
