@@ -70,7 +70,7 @@ class Player:
         self.static_y = y
         self.height = height
         self.width = width
-        self.speed = 5
+        self.speed = RUN_SPEED
         self.is_jump = False
         self.left = False
         self.right = False
