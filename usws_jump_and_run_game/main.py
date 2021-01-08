@@ -145,13 +145,13 @@ def redraw_game_window():
 
 def check_collision(player, enemy):
     global game_over
+    if player.is_dead:
+        game_over = True
+        game_over_screen()
     if player.hitbox[1] < enemy.hitbox[1] + enemy.hitbox[3] and player.hitbox[1] + player.hitbox[3] > enemy.hitbox[1]:
         if player.hitbox[0] + player.hitbox[2] > enemy.hitbox[0] and player.hitbox[0] < enemy.hitbox[0] + enemy.hitbox[2]:
             game_over = True
             game_over_screen()
-    elif player.is_dead:
-        game_over = True
-        game_over_screen()
     else:
         game_over = False
 
@@ -351,7 +351,8 @@ while main_program_run:
                 player.fall_from_obstacle()
             if player.is_landing and player.is_player_underneath_obstacle():
                 player.fall_from_obstacle()
-            if player.obstacle_underneath_player and not player.is_on_obstacle and player.is_landing:
+            player.is_obstacle_underneath_player()
+            if player.obstacle_underneath_player and not player.is_on_obstacle and player.is_landing and not player.is_on_previous_obstacle:
                 player.land_on_obstacle()
             if player.is_colliding and not player.is_landing:
                 player.collide_with_obstacle()
@@ -371,7 +372,7 @@ while main_program_run:
                     player.hitbox = (player.static_x + 30, player.y + 15, player.height, player.width)
 
             player.is_obstacle_underneath_player()
-            player.is_player_on_obstacle()
+            player.check_for_vertical_obstacles()
 
                 # for debugging:
             if counter % 1000 == 0:
