@@ -86,10 +86,10 @@ spike15 = Spike(4430, 640, 70, 30)
 platform18 = Platform(4500, 620, 30, 40)
 spike16 = Spike(4530, 640, 70, 30)
 platform19 = Platform(4600, 560, 30, 100)
-coin = Coin(4700, 610, 25, 25)
+coin = Coin(200, 550, 25, 25)
 
 #Arranging obstacles in Array
-obstacles = [platform, platform2, platform3, platform4, platform5,platform6,platform7,platform8,platform9,platform10,platform11,platform12,platform13,platform14,platform15, platform16, platform17, platform18,platform19, spike, spike2, spike3, spike4, spike5, spike6, spike7, spike8, spike10, spike11, spike12, spike13,spike14, spike15, spike16, coin]
+obstacles = [platform, platform2, platform3, platform4, platform5,platform6,platform7,platform8,platform9,platform10,platform11,platform12,platform13,platform14,platform15, platform16, platform17, platform18,platform19, spike, spike2, spike3, spike4, spike5, spike6, spike7, spike8,spike9, spike10, spike11, spike12, spike13,spike14, spike15, spike16, coin]
 player.obstacles = obstacles
 
 #Arranging enemies in Array
