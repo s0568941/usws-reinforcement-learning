@@ -5,6 +5,7 @@ import math
 
 from usws_jump_and_run_game.environment.obstacles.platform import Platform
 from usws_jump_and_run_game.environment.obstacles.spike import Spike
+from usws_jump_and_run_game.environment.obstacles.coin import Coin
 
 pygame.init()
 
@@ -101,6 +102,7 @@ class Player:
         self.index_landed_obstacle = None
         self.closest_upper_distance = None
         self.is_dead = False
+        self.has_coin = False
 
     def draw(self, screen):
         # Mithilfe von walk_count wird ein Bild aus dem Array ausgesucht, was die Bewegung animiert
@@ -166,8 +168,15 @@ class Player:
             if not self.is_on_obstacle and not self.is_colliding:
                 self.fall_from_obstacle()
 
+    def check_for_coin(self):
+        for obstacle in self.obstacles:
+            if type(obstacle) is Coin:
+                if self.x == (obstacle.x - 25):
+                    self.has_coin = True
+
     # checks if an obstacle is in front of the player and blocks its movement
     def check_for_horizontal_obstacles(self, right=True):
+        self.check_for_coin()
         moving_hitbox_x = self.static_x + PLAYER_HITBOX_PADDING_X
         next_x_coords_left_side = moving_hitbox_x - self.speed
         next_x_coords_right_side = moving_hitbox_x + self.hitbox[2] + self.speed

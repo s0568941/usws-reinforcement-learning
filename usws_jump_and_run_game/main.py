@@ -16,6 +16,7 @@ from usws_jump_and_run_game.environment.obstacles.spike import Spike
 from usws_jump_and_run_game.characters.hyena import Hyena
 from usws_jump_and_run_game.characters.scorpio import Scorpio
 from usws_jump_and_run_game.characters.skull import Skull
+from usws_jump_and_run_game.environment.obstacles.coin import Coin
 
 #Player initilisation
 player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
@@ -82,13 +83,13 @@ spike14 = Spike(4330, 640, 70, 30)
 platform17 = Platform(4400, 560, 30, 100)
 skull6 = Skull(4395, 400, 25, 25, 520)
 spike15 = Spike(4430, 640, 70, 30)
-platform18 = Platform(4500, 640, 30, 20)
+platform18 = Platform(4500, 620, 30, 40)
 spike16 = Spike(4530, 640, 70, 30)
 platform19 = Platform(4600, 560, 30, 100)
-
+coin = Coin(4700, 610, 25, 25)
 
 #Arranging obstacles in Array
-obstacles = [platform, platform2, platform3, platform4, platform5,platform6,platform7,platform8,platform9,platform10,platform11,platform12,platform13,platform14,platform15, platform16, platform17, platform18,platform19, spike, spike2, spike3, spike4, spike5, spike6, spike7, spike8, spike10, spike11, spike12, spike13,spike14, spike15, spike16]
+obstacles = [platform, platform2, platform3, platform4, platform5,platform6,platform7,platform8,platform9,platform10,platform11,platform12,platform13,platform14,platform15, platform16, platform17, platform18,platform19, spike, spike2, spike3, spike4, spike5, spike6, spike7, spike8, spike10, spike11, spike12, spike13,spike14, spike15, spike16, coin]
 player.obstacles = obstacles
 
 #Arranging enemies in Array
