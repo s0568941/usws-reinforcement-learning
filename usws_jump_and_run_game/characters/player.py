@@ -171,7 +171,7 @@ class Player:
     def check_for_coin(self):
         for obstacle in self.obstacles:
             if type(obstacle) is Coin:
-                if self.x == (obstacle.x - 25):
+                if self.static_x >= (obstacle.hitbox[0] - 25):
                     self.has_coin = True
 
     # checks if an obstacle is in front of the player and blocks its movement
@@ -188,6 +188,9 @@ class Player:
             obstacle_bottom = obstacle_y + obstacle.hitbox[3]
             obstacle_on_same_level = obstacle_y <= char_feet_y <= obstacle_bottom
             if right:
+                if (self.x + self.speed) >= END_OF_SCREEN:
+                    self.movement_blocked = True
+                    return self.movement_blocked
                 if obstacle_x <= next_x_coords_right_side <= obstacle_total_width \
                         and obstacle_on_same_level:
                     if type(obstacle) is Spike:

@@ -12,11 +12,12 @@ Y_STARTING_POSITION = 595
 PLAYER_STATIC_X = (SCREEN_WIDTH // 2)
 PLAYER_HITBOX_PADDING_X = 30
 PLAYER_HITBOX_PADDING_Y = 15
+END_OF_SCREEN = 4850
 
 
 # Start Screen Constants
 SCREENTITLE = "USWS JUMP AND RUN PROJECT"
-NASSIM_TEXT = "Nassim Uhrmann, s0xxxxxxx "
+NASSIM_TEXT = "Nassim Uhrmann, s0568941 "
 NICO_TEXT = "Nico Schultze, s0569571"
 START_GAME_TEXT = "Press P to play the game."
 START_KI_TEXT = "Press SPACEBAR to let the AI play the game."
