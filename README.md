@@ -4,8 +4,9 @@
 Nach folgendem Schmea benennen: usws-<id>-beschreibung-was-der-branch-macht
 Und dann Liste hier ergänzen:
 
-usws-1-setup-pygame
-usws-extended-setup-pygame
+- usws-1-setup-pygame
+- usws-extended-setup-pygame
+- usws-3-introduce-q-learning
 
 ## Branch How To
 Vom main branch aus einen neuen Branch fuer die naechste Aufgabe aufmachen: 
