@@ -27,7 +27,7 @@ class Hyena(Enemy):
 
     def __init__(self, x, y, width, height, end):
         super().__init__(x, y, width, height, end)
-        self.speed = 6
+        self.speed = 5
         self.hitbox = (self.x + 5, self.y + 5, self.height, self.width)
 
     def draw(self, screen):

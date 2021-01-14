@@ -61,7 +61,7 @@ class Game:
         self.spike5 = Spike(2125, 450, 50, 30)
         self.spike6 = Spike(2265, 450, 50, 30)
         self.platform9 = Platform(2115, 400, 210, 30)
-        self.platform10 = Platform(2147, 320, 146, 30)
+        self.platform10 = Platform(2147, 320, 146, 80)
         self.platform11 = Platform(2180, 240, 80, 440)
         self.skull2 = Skull(2200, 100, 25, 25, 180)
         self.hyena3 = Hyena(2260, 525, 25, 40, 2460)
@@ -74,17 +74,16 @@ class Game:
 
         # Checkpoint 4 - Start of Skull section
         self.platform14 = Platform(2820, 560, 600, 100)
-        self.skull3 = Skull(2900, 420, 25, 25, 520)
-        self.spike10 = Spike(3000, 530, 50, 30)
+        self.skull3 = Skull(2850, 420, 25, 25, 520)
+        self.spike10 = Spike(2950, 530, 50, 30)
         self.skull4 = Skull(3100, 450, 25, 25, 520)
-        self.spike11 = Spike(3200, 530, 50, 30)
-        self.skull5 = Skull(3300, 420, 25, 25, 520)
+        self.spike11 = Spike(3250, 530, 50, 30)
+        self.skull5 = Skull(3350, 420, 25, 25, 520)
 
         # Checkpoint 4 - Start of animal section
         self.hyena4 = Hyena(3420, 620, 25, 40, 3780)
         self.spike12 = Spike(3820, 640, 60, 30)
-        self.hyena5 = Hyena(3900, 620, 25, 40, 4160)
-        self.scorpio3 = Scorpio(3900, 620, 25, 40, 4160)
+        self.scorpio3 = Scorpio(3900, 620, 25, 40, 4100)
 
         # Checkpoint 5 - Start of last section
         self.platform15 = Platform(4200, 560, 30, 100)
@@ -92,11 +91,11 @@ class Game:
         self.platform16 = Platform(4300, 600, 30, 60)
         self.spike14 = Spike(4330, 640, 70, 30)
         self.platform17 = Platform(4400, 560, 30, 100)
-        self.skull6 = Skull(4395, 400, 25, 25, 520)
         self.spike15 = Spike(4430, 640, 70, 30)
         self.platform18 = Platform(4500, 620, 30, 40)
         self.spike16 = Spike(4530, 640, 70, 30)
         self.platform19 = Platform(4600, 560, 30, 100)
+        self.skull6 = Skull(4595, 400, 25, 25, 520)
         self.coin = Coin(4800, 590, 25, 25)
 
         # Arranging obstacles in Array
@@ -111,7 +110,7 @@ class Game:
 
         # Arranging enemies in Array
         self.enemies = [self.scorpio1, self.scorpio2, self.scorpio3, self.hyena1, self.hyena2, self.hyena3, self.hyena4,
-                        self.hyena5, self.skull1, self.skull2, self.skull3, self.skull4,
+                        self.skull1, self.skull2, self.skull3, self.skull4,
                         self.skull5, self.skull6]
 
         # for debugging:
@@ -121,23 +120,27 @@ class Game:
         # Boolean: True = Spiel laeuft | False = Spiel Ende
         self.main_program_run = True
         self.startscreen_run = False
-        self.game_run = False
-        self.ki_run = False
+        self.version_1_run = False
+        self.version_2_run = False
+        self.ki_version_1_run = False
+        self.ki_version_2_run = False
         self.game_over = False
         self.input_done = False
 
         # Start Screen setup
         self.title = pygame_f.makeLabel(SCREENTITLE, 60, 300, 230, "black", "Arial", "clear")
-        self.start_game_text = pygame_f.makeLabel(START_GAME_TEXT, 35, 300, 300, "black", "Arial", "clear")
-        self.start_ki_text = pygame_f.makeLabel(START_KI_TEXT, 35, 300, 350, "black", "Arial", "clear")
-        self.end_game_text = pygame_f.makeLabel(END_GAME_TEXT, 35, 300, 400, "black", "Arial", "clear")
-        self.nassim_text = pygame_f.makeLabel(NASSIM_TEXT, 25, 1100, 600, "black", "Arial", "clear")
-        self.nico_text = pygame_f.makeLabel(NICO_TEXT, 25, 1100, 650, "black", "Arial", "clear")
+        self.start_style_1_text = pygame_f.makeLabel(START_GAME_STYLE_1, 35, 300, 300, "black", "Arial", "clear")
+        self.start_style_2_text = pygame_f.makeLabel(START_GAME_STYLE_2, 35, 300, 350, "black", "Arial", "clear")
+        self.start_ki_style_1_text = pygame_f.makeLabel(START_KI_STYLE_1, 35, 300, 400, "black", "Arial", "clear")
+        self.start_ki_style_2_text = pygame_f.makeLabel(START_KI_STYLE_2, 35, 300, 450, "black", "Arial", "clear")
+        self.end_game_text = pygame_f.makeLabel(END_GAME_TEXT, 35, 300, 500, "black", "Arial", "clear")
+        self.nassim_text = pygame_f.makeLabel(NASSIM_TEXT, 25, 1100, 50, "black", "Arial", "clear")
+        self.nico_text = pygame_f.makeLabel(NICO_TEXT, 25, 1100, 100, "black", "Arial", "clear")
 
         # Game Over Screen Setup
         self.go_title = pygame_f.makeLabel(GO_TITLE, 100, 430, 150, "black", "Arial", "clear")
         self.kill_text = pygame_f.makeLabel(KILL_TEXT, 40, 500, 300, "black", "Arial", "clear")
-        self.return_text = pygame_f.makeLabel(RETURN_TEXT, 35, 400, 350, "black", "Arial", "clear")
+        self.return_text = pygame_f.makeLabel(RETURN_TEXT, 35, 350, 350, "black", "Arial", "clear")
 
         ### Q Learning ###
         self.exploration_rate = EXPLORATION_RATE
@@ -149,9 +152,10 @@ class Game:
         self.action_space = [MOVE_RIGHT, MOVE_LEFT, JUMP]
         # Track number of steps per episode / game for q learning
         self.steps_per_episode = 0
-        self.max_episodes_reached = self.ki_run and self.current_episode == NUMBER_EPISODES
+        self.max_episodes_reached = self.ki_version_1_run and self.current_episode == NUMBER_EPISODES
+        self.max_episodes_reached_v2 = self.ki_version_2_run and self.current_episode == NUMBER_EPISODES
         # Track rewards
-        self.epsiode_rewards = []
+        self.episode_rewards = []
         # Q Learning done?
         self.q_l_done = False
         self.rewards_current_episode = 0
@@ -190,7 +194,7 @@ class Game:
         self.spike5 = Spike(2125, 450, 50, 30)
         self.spike6 = Spike(2265, 450, 50, 30)
         self.platform9 = Platform(2115, 400, 210, 30)
-        self.platform10 = Platform(2147, 320, 146, 30)
+        self.platform10 = Platform(2147, 320, 146, 80)
         self.platform11 = Platform(2180, 240, 80, 440)
         self.skull2 = Skull(2200, 100, 25, 25, 180)
         self.hyena3 = Hyena(2260, 525, 25, 40, 2460)
@@ -203,17 +207,16 @@ class Game:
 
         # Checkpoint 4 - Start of Skull section
         self.platform14 = Platform(2820, 560, 600, 100)
-        self.skull3 = Skull(2900, 420, 25, 25, 520)
-        self.spike10 = Spike(3000, 530, 50, 30)
+        self.skull3 = Skull(2850, 420, 25, 25, 520)
+        self.spike10 = Spike(2950, 530, 50, 30)
         self.skull4 = Skull(3100, 450, 25, 25, 520)
-        self.spike11 = Spike(3200, 530, 50, 30)
-        self.skull5 = Skull(3300, 420, 25, 25, 520)
+        self.spike11 = Spike(3250, 530, 50, 30)
+        self.skull5 = Skull(3350, 420, 25, 25, 520)
 
         # Checkpoint 4 - Start of animal section
         self.hyena4 = Hyena(3420, 620, 25, 40, 3780)
         self.spike12 = Spike(3820, 640, 60, 30)
-        self.hyena5 = Hyena(3900, 620, 25, 40, 4160)
-        self.scorpio3 = Scorpio(3900, 620, 25, 40, 4160)
+        self.scorpio3 = Scorpio(3900, 620, 25, 40, 4100)
 
         # Checkpoint 5 - Start of last section
         self.platform15 = Platform(4200, 560, 30, 100)
@@ -221,11 +224,11 @@ class Game:
         self.platform16 = Platform(4300, 600, 30, 60)
         self.spike14 = Spike(4330, 640, 70, 30)
         self.platform17 = Platform(4400, 560, 30, 100)
-        self.skull6 = Skull(4395, 400, 25, 25, 520)
         self.spike15 = Spike(4430, 640, 70, 30)
         self.platform18 = Platform(4500, 620, 30, 40)
         self.spike16 = Spike(4530, 640, 70, 30)
         self.platform19 = Platform(4600, 560, 30, 100)
+        self.skull6 = Skull(4595, 400, 25, 25, 520)
         self.coin = Coin(4800, 590, 25, 25)
 
         # Arranging obstacles in Array
@@ -240,7 +243,7 @@ class Game:
 
         # Arranging enemies in Array
         self.enemies = [self.scorpio1, self.scorpio2, self.scorpio3, self.hyena1, self.hyena2, self.hyena3, self.hyena4,
-                        self.hyena5, self.skull1, self.skull2, self.skull3, self.skull4,
+                        self.skull1, self.skull2, self.skull3, self.skull4,
                         self.skull5, self.skull6]
 
         # for debugging:
@@ -250,22 +253,25 @@ class Game:
         # Boolean: True = Spiel laeuft | False = Spiel Ende
         self.main_program_run = True
         self.startscreen_run = False
-        self.game_run = False
+        self.version_1_run = False
+        self.version_2_run = False
         self.game_over = False
         self.input_done = False
 
         # Start Screen setup
         self.title = pygame_f.makeLabel(SCREENTITLE, 60, 300, 230, "black", "Arial", "clear")
-        self.start_game_text = pygame_f.makeLabel(START_GAME_TEXT, 35, 300, 300, "black", "Arial", "clear")
-        self.start_ki_text = pygame_f.makeLabel(START_KI_TEXT, 35, 300, 350, "black", "Arial", "clear")
-        self.end_game_text = pygame_f.makeLabel(END_GAME_TEXT, 35, 300, 400, "black", "Arial", "clear")
+        self.start_style_1_text = pygame_f.makeLabel(START_GAME_STYLE_1, 35, 300, 300, "black", "Arial", "clear")
+        self.start_style_2_text = pygame_f.makeLabel(START_GAME_STYLE_2, 35, 300, 350, "black", "Arial", "clear")
+        self.start_ki_style_1_text = pygame_f.makeLabel(START_KI_STYLE_1, 35, 300, 400, "black", "Arial", "clear")
+        self.start_ki_style_2_text = pygame_f.makeLabel(START_KI_STYLE_2, 35, 300, 450, "black", "Arial", "clear")
+        self.end_game_text = pygame_f.makeLabel(END_GAME_TEXT, 35, 300, 500, "black", "Arial", "clear")
         self.nassim_text = pygame_f.makeLabel(NASSIM_TEXT, 25, 1100, 600, "black", "Arial", "clear")
         self.nico_text = pygame_f.makeLabel(NICO_TEXT, 25, 1100, 650, "black", "Arial", "clear")
 
         # Game Over Screen Setup
         self.go_title = pygame_f.makeLabel(GO_TITLE, 100, 430, 150, "black", "Arial", "clear")
         self.kill_text = pygame_f.makeLabel(KILL_TEXT, 40, 500, 300, "black", "Arial", "clear")
-        self.return_text = pygame_f.makeLabel(RETURN_TEXT, 35, 400, 350, "black", "Arial", "clear")
+        self.return_text = pygame_f.makeLabel(RETURN_TEXT, 35, 350, 350, "black", "Arial", "clear")
 
         ### Q Learning ###
         self.steps_per_episode = 0
@@ -273,6 +279,14 @@ class Game:
 
         self.setup_screen()
         pygame_f.updateDisplay()
+
+    #second level (if needed)
+    def version_2(self):
+        pass
+
+    #second level reset (if needed)
+    def version_2_reset(self):
+        pass
 
     def dump(self, obj):
         for attr in dir(obj):
@@ -297,14 +311,24 @@ class Game:
     def check_collision(self, player, enemy):
         global game_over
         # Q Learning
-        if self.ki_run:
+        if self.ki_version_1_run:
             if self.steps_per_episode > MAX_STEPS_PER_EPISODE:
                 self.game_over = True
                 self.game_over_screen()
-                self.epsiode_rewards.append(self.rewards_current_episode)
+                self.episode_rewards.append(self.rewards_current_episode)
             if self.current_episode == NUMBER_EPISODES:
                 self.main_program_run = False
                 self.save_q_table()
+
+        if self.ki_version_2_run:
+            if self.steps_per_episode > MAX_STEPS_PER_EPISODE:
+                self.game_over = True
+                self.game_over_screen()
+                self.episode_rewards.append(self.rewards_current_episode)
+            if self.current_episode == NUMBER_EPISODES:
+                self.main_program_run = False
+                self.save_q_table()
+
         if player.is_dead:
             self.game_over = True
             self.game_over_screen()
@@ -339,7 +363,8 @@ class Game:
         return reward
 
     def game_over_screen(self):
-        global game_run
+        global version_1_run
+        global version_2_run
         self.clock.tick(27)
 
         pygame_f.showLabel(self.go_title)
@@ -349,10 +374,18 @@ class Game:
 
         while True:
             # Did agent finish?
-            self.max_episodes_reached = self.ki_run and self.current_episode == NUMBER_EPISODES
+            self.max_episodes_reached = self.ki_version_1_run and self.current_episode == NUMBER_EPISODES
             if not self.max_episodes_reached and self.current_episode > 0:
                 self.main_program_run = True
-                self.game_run = False
+                self.version_1_run = False
+                self.hide_game_over_screen()
+                self.reset()
+                return
+
+            self.max_episodes_reached = self.ki_version_2_run and self.current_episode == NUMBER_EPISODES
+            if not self.max_episodes_reached and self.current_episode > 0:
+                self.main_program_run = True
+                self.version_2_run = False
                 self.hide_game_over_screen()
                 self.reset()
                 return
@@ -362,15 +395,18 @@ class Game:
                     self.main_program_run = False
                 if event.type == pygame.KEYDOWN:
                     self.main_program_run = True
-                    self.game_run = False
+                    self.version_1_run = False
+                    self.version_2_run = False
                     self.hide_game_over_screen()
                     self.reset()
                     return
 
     def hide_start_screen(self):
         pygame_f.hideLabel(self.title)
-        pygame_f.hideLabel(self.start_game_text)
-        pygame_f.hideLabel(self.start_ki_text)
+        pygame_f.hideLabel(self.start_style_1_text)
+        pygame_f.hideLabel(self.start_style_2_text)
+        pygame_f.hideLabel(self.start_ki_style_1_text)
+        pygame_f.hideLabel(self.start_ki_style_2_text)
         pygame_f.hideLabel(self.end_game_text)
         pygame_f.hideLabel(self.nassim_text)
         pygame_f.hideLabel(self.nico_text)
@@ -389,8 +425,10 @@ class Game:
                 self.save_q_table()
 
         pygame_f.showLabel(self.title)
-        pygame_f.showLabel(self.start_game_text)
-        pygame_f.showLabel(self.start_ki_text)
+        pygame_f.showLabel(self.start_style_1_text)
+        pygame_f.showLabel(self.start_style_2_text)
+        pygame_f.showLabel(self.start_ki_style_1_text)
+        pygame_f.showLabel(self.start_ki_style_2_text)
         pygame_f.showLabel(self.end_game_text)
         pygame_f.showLabel(self.nassim_text)
         pygame_f.showLabel(self.nico_text)
@@ -444,44 +482,63 @@ class Game:
             self.start_screen()
             keys = pygame.key.get_pressed()
 
-            self.max_episodes_reached = self.ki_run and self.current_episode == NUMBER_EPISODES
-            if not self.max_episodes_reached and self.ki_run:
-                self.game_run = True
-                self.ki_run = True
+            self.max_episodes_reached = self.ki_version_1_run and self.current_episode == NUMBER_EPISODES
+            if not self.max_episodes_reached and self.ki_version_1_run:
+                self.version_1_run = True
+                self.ki_version_1_run = True
                 self.current_episode += 1
                 self.get_state()
             elif self.max_episodes_reached:
                 self.main_program_run = False
                 self.save_q_table()
-            if keys[pygame.K_p]:
-                self.game_run = True
-            elif keys[pygame.K_SPACE] or not self.max_episodes_reached and self.ki_run:
-                self.game_run = True
-                self.ki_run = True
+
+            self.max_episodes_reached = self.ki_version_2_run and self.current_episode == NUMBER_EPISODES
+            if not self.max_episodes_reached and self.ki_version_2_run:
+                self.version_2_run = True
+                self.ki_version_2_run = True
+                self.current_episode += 1
+                self.get_state()
+            elif self.max_episodes_reached:
+                self.main_program_run = False
+                self.save_q_table()
+
+            if keys[pygame.K_1]:
+                self.version_1_run = True
+            elif keys[pygame.K_a] or not self.max_episodes_reached and self.ki_version_1_run:
+                self.version_1_run = True
+                self.ki_version_1_run = True
+                self.current_episode += 1
+                self.get_state()
+                self.load_q_table()
+            elif keys[pygame.K_2]:
+                self.version_2_run = True
+            elif keys[pygame.K_b] or not self.max_episodes_reached and self.ki_version_2_run:
+                self.version_2_run = True
+                self.ki_version_2_run = True
                 self.current_episode += 1
                 self.get_state()
                 self.load_q_table()
 
-            # 1. Spiel starten manuell
-            while self.game_run:
+            # 1.version starten manuell
+            while self.version_1_run:
                 # erhöht die FPS-Anzahl um das Spiel fluessiger zu gestalten
                 self.hide_start_screen()
                 self.clock.tick(27)
 
                 # prüft jeden enemy ob eine collision vorliegt
-                for enemy in self.enemies:
-                    self.check_collision(self.player, enemy)
+                # for enemy in self.enemies:
+                #     self.check_collision(self.player, enemy)
 
                 # Schaue nach ob eines der events das Spiel beenden moechte (Fensterkreuz)
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        self.game_run = False
+                        self.version_1_run = False
                         self.main_program_run = False
                         self.save_q_table()
                         # sys.exit() waere eine andere alternative
                 if not self.game_over:
                     # Hole eine aktuelle Liste der Tasten, die gedrueckt wurden
-                    keys = pygame.key.get_pressed() if not self.ki_run else None
+                    keys = pygame.key.get_pressed() if not self.ki_version_1_run else None
 
                     ### Q Learning ###
                     self.steps_per_episode += 1
@@ -499,9 +556,9 @@ class Game:
 
                     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
                     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
-                    command_left = keys[pygame.K_LEFT] == 1 if not self.ki_run else action == MOVE_LEFT
-                    command_right = keys[pygame.K_RIGHT] == 1 if not self.ki_run else action == MOVE_RIGHT
-                    command_jump = keys[pygame.K_SPACE] == 1 if not self.ki_run else action == JUMP
+                    command_left = keys[pygame.K_LEFT] == 1 if not self.ki_version_1_run else action == MOVE_LEFT
+                    command_right = keys[pygame.K_RIGHT] == 1 if not self.ki_version_1_run else action == MOVE_RIGHT
+                    command_jump = keys[pygame.K_SPACE] == 1 if not self.ki_version_1_run else action == JUMP
                     if command_left and self.player.x > self.player.speed:
                         # Scrolling background is deactivated once player arrives at the center and proceeds to the left
                         if self.player.x > PLAYER_STATIC_X and not self.player.movement_blocked:
@@ -624,6 +681,136 @@ class Game:
                     # Exploration rate decay
                     self.exploration_rate = MIN_EXPLORATION_RATE + (MAX_EXPLORATION_RATE - MIN_EXPLORATION_RATE) * \
                                             np.exp(-EXPLORATION_DECAY_RATE * self.current_episode)
+
+
+            # 2. version starten manuell
+            while self.version_2_run:
+                # erhöht die FPS-Anzahl um das Spiel fluessiger zu gestalten
+                self.hide_start_screen()
+                self.clock.tick(27)
+
+                # prüft jeden enemy ob eine collision vorliegt
+                for enemy in self.enemies:
+                    self.check_collision(self.player, enemy)
+
+                # Schaue nach ob eines der events das Spiel beenden moechte (Fensterkreuz)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.version_2_run = False
+                        self.main_program_run = False
+                        self.save_q_table()
+                        # sys.exit() waere eine andere alternative
+                if not self.game_over:
+                    # Hole eine aktuelle Liste der Tasten, die gedrueckt wurden
+                    keys = pygame.key.get_pressed() if not self.ki_version_2_run else None
+
+                    ### Q Learning ###
+                    self.steps_per_episode += 1
+                    # Exploration - Exploitation trade-off - set between 0 and 1 -> determines whether exploring or exploiting
+                    exploration_rate_threshold = random.uniform(0, 1)
+                    if exploration_rate_threshold > self.exploration_rate:
+                        # exploit: choose action with highest q value for current state
+                        if self.get_state() not in self.q_table:
+                            self.q_table[self.get_state()] = [0 for i in range(3)]
+                        action = np.argmax(self.q_table[self.get_state()])
+                    else:
+                        # explore: choose an action randomly
+                        action = random.choice(self.action_space)
+
+                    # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
+                    # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
+                    command_jump = keys[pygame.K_SPACE] == 1 if not self.ki_version_2_run else action == JUMP
+
+                        # Scrolling background is activated once player arrives at the center
+                    if self.player.x > PLAYER_STATIC_X and not self.player.movement_blocked:
+                        pygame_f.scrollBackground(-self.player.speed, 0)
+                        for obstacle in self.obstacles:
+                            obstacle.move_left()
+                        for enemy in self.enemies:
+                            enemy.adapt_to_screen_left()
+                    else:
+                        pygame_f.scrollBackground(0, 0)
+                    self.player.move_right()
+                    self.player.is_obstacle_underneath_player()
+                    self.player.is_player_underneath_obstacle()
+
+                    if not self.player.is_jump:
+                        self.player.right = True
+                        self.player.idle_right = True
+                        self.player.last_dir = 'r'
+
+
+                    # Wenn der Spieler nicht springt, dann bewegt er sich normal mit der Geschwindigkeit
+                    if not self.player.is_jump:
+                        if command_jump:
+                            pygame_f.scrollBackground(0, 0)
+                            self.player.is_jump = True
+                            self.player.right = False
+                            self.player.walk_count = 0
+
+                    # Wenn der Spieler springt, dann erfolgt das mithilfe einer quadratischen Formel
+                    # https://www.geeksforgeeks.org/python-making-an-object-jump-in-pygame/
+                    else:
+                        self.player.jump()
+
+                    if self.player.is_fall and not self.player.is_on_obstacle and self.player.y < Y_STARTING_POSITION and not self.player.is_colliding and not self.player.obstacle_underneath_player:
+                        self.player.fall_from_obstacle()
+                    if self.player.is_landing and self.player.is_player_underneath_obstacle():
+                        self.player.fall_from_obstacle()
+                    self.player.is_obstacle_underneath_player()
+                    if self.player.obstacle_underneath_player and not self.player.is_on_obstacle and self.player.is_landing and not self.player.is_on_previous_obstacle:
+                        self.player.land_on_obstacle()
+                    if self.player.is_colliding and not self.player.is_landing:
+                        self.player.collide_with_obstacle()
+                    if self.player.is_landing and not self.player.is_jump:
+                        self.player.land_on_obstacle()
+                        if self.player.y > Y_STARTING_POSITION:
+                            self.player.is_landing = False
+                    if self.player.is_falling_to_ground:
+                        if self.player.y > Y_STARTING_POSITION:
+                            self.player.is_falling_to_ground = False
+
+                    if not self.player.is_jump and not self.player.is_landing and not self.player.is_colliding:
+                        self.player.check_for_vertical_obstacles()
+                        self.player.is_player_on_obstacle()
+                        if self.player.y != Y_STARTING_POSITION and not self.player.is_on_obstacle and not self.player.is_falling_to_ground:
+                            self.player.y = Y_STARTING_POSITION
+                            self.player.hitbox = (
+                                self.player.static_x + 30, self.player.y + 15, self.player.height, self.player.width)
+
+                    self.player.is_obstacle_underneath_player()
+                    self.player.check_for_vertical_obstacles()
+
+                    self.redraw_game_window()
+
+                    new_state, reward, done, info = self.step(action)
+
+                    # Update q table
+                    if self.state not in self.q_table:
+                        self.q_table[self.state] = [0 for i in range(3)]
+                    if new_state not in self.q_table:
+                        self.q_table[new_state] = [0 for i in range(3)]
+
+                    self.q_table[self.state][action] = self.q_table[self.state][action] * (1 - LEARNING_RATE) + \
+                                                       LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
+                        self.q_table[new_state]))
+
+                    self.state = new_state
+                    self.rewards_current_episode += reward
+
+                    if self.steps_per_episode % 200 == 0:
+                        print('------------------------------------')
+                        print('Step ', self.steps_per_episode)
+                        print('Episode', self.current_episode)
+                        print('self.exploration_rate', self.exploration_rate)
+                        print('Reward', reward)
+                        print('Rewards for episode', self.rewards_current_episode)
+                        print('------------------------------------')
+
+                    # Exploration rate decay
+                    self.exploration_rate = MIN_EXPLORATION_RATE + (MAX_EXPLORATION_RATE - MIN_EXPLORATION_RATE) * \
+                                            np.exp(-EXPLORATION_DECAY_RATE * self.current_episode)
+
 
         pygame.quit()
 
