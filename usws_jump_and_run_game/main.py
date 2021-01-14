@@ -146,7 +146,7 @@ class Game:
         # Delta player - coin is the state
         self.state = None
         # action space
-        self.action_space = [MOVE_LEFT, MOVE_RIGHT, JUMP]
+        self.action_space = [MOVE_RIGHT, MOVE_LEFT, JUMP]
         # Track number of steps per episode / game for q learning
         self.steps_per_episode = 0
         self.max_episodes_reached = self.ki_run and self.current_episode == NUMBER_EPISODES
@@ -317,6 +317,27 @@ class Game:
         else:
             game_over = False
 
+    def check_overcoming_obstacles(self):
+        global reward
+        reward = 0
+        for obst in self.obstacles:
+            if type(obst) is not Coin and self.player.static_x + PLAYER_HITBOX_PADDING_X > obst.x + obst.width + self.player.speed:
+                if not obst.is_overcome and not self.player.is_dead:
+                    obst.is_overcome = True
+                    if type(obst) is Platform:
+                        reward += OVERCOME_PLATFORM_REWARD
+                    else:
+                        reward += OVERCOME_ENEMY_REWARD
+
+        for enemy in self.enemies:
+            if type(enemy) is not Coin and self.player.static_x + PLAYER_HITBOX_PADDING_X > enemy.x + enemy.width + self.player.speed:
+                if not enemy.is_overcome and not self.player.is_dead:
+                    enemy.is_overcome = True
+                    reward += OVERCOME_ENEMY_REWARD
+                    return reward
+
+        return reward
+
     def game_over_screen(self):
         global game_run
         self.clock.tick(27)
@@ -360,8 +381,6 @@ class Game:
         pygame_f.hideLabel(self.kill_text)
         pygame_f.hideLabel(self.return_text)
 
-        # Todo: needs to hide/delete all sprites and platforms
-
     def start_screen(self):
         self.clock.tick(27)
         for event in pygame.event.get():
@@ -389,6 +408,7 @@ class Game:
 
     def step(self, action):
         global reward, new_state, done, info
+        reward = 0
         new_state = self.get_state()
         if action == MOVE_RIGHT:
             reward = - MOVE_RIGHT_REWARD
@@ -400,6 +420,9 @@ class Game:
             reward = DIE_REWARD
         if self.player.has_coin:
             reward = COIN_REWARD
+        reward += self.check_overcoming_obstacles()
+        # Rewarding player for progressing further in the level
+        reward += abs(int(self.player.x - X_STARTING_POSITION) * 50)
         done = self.game_over
         info = self.player.has_coin
         return new_state, reward, done, info
@@ -462,13 +485,14 @@ class Game:
 
                     ### Q Learning ###
                     self.steps_per_episode += 1
+                    state = self.get_state()
                     # Exploration - Exploitation trade-off - set between 0 and 1 -> determines whether exploring or exploiting
                     exploration_rate_threshold = random.uniform(0, 1)
                     if exploration_rate_threshold > self.exploration_rate:
                         # exploit: choose action with highest q value for current state
-                        if self.get_state() not in self.q_table:
-                            self.q_table[self.get_state()] = [0 for i in range(3)]
-                        action = np.argmax(self.q_table[self.get_state()])
+                        if state not in self.q_table:
+                            self.q_table[state] = [0 for i in range(3)]
+                        action = np.argmax(self.q_table[state])
                     else:
                         # explore: choose an action randomly
                         action = random.choice(self.action_space)
@@ -576,12 +600,12 @@ class Game:
                     new_state, reward, done, info = self.step(action)
 
                     # Update q table
-                    if self.state not in self.q_table:
-                        self.q_table[self.state] = [0 for i in range(3)]
+                    if state not in self.q_table:
+                        self.q_table[state] = [0 for i in range(3)]
                     if new_state not in self.q_table:
                         self.q_table[new_state] = [0 for i in range(3)]
 
-                    self.q_table[self.state][action] = self.q_table[self.state][action] * (1 - LEARNING_RATE) + \
+                    self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
                                                        LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
                         self.q_table[new_state]))
 

@@ -14,6 +14,7 @@ class Enemy:
         self.path = [self.x, self.end]
         self.walk_count = 0
         self.hitbox = (self.x, self.y, self.height, self.width)
+        self.is_overcome = False
 
     def draw(self):
         pass
