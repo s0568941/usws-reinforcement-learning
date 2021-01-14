@@ -448,19 +448,39 @@ class Game:
         global reward, new_state, done, info
         reward = 0
         new_state = self.get_state()
-        if action == MOVE_RIGHT:
-            reward = - MOVE_RIGHT_REWARD
-        if action == MOVE_LEFT:
-            reward = - MOVE_LEFT_REWARD
-        if action == JUMP:
-            reward = - JUMP_REWARD
-        if self.player.is_dead:
-            reward = DIE_REWARD
-        if self.player.has_coin:
-            reward = COIN_REWARD
-        reward += self.check_overcoming_obstacles()
         # Rewarding player for progressing further in the level
         reward += abs(int(self.player.x - X_STARTING_POSITION) * 50)
+        reward += self.check_overcoming_obstacles()
+        if action == MOVE_RIGHT:
+            reward += - MOVE_RIGHT_REWARD
+        if action == MOVE_LEFT:
+            reward += - MOVE_LEFT_REWARD
+        if action == JUMP:
+            reward += - JUMP_REWARD
+        if self.player.is_dead:
+            reward += DIE_REWARD
+        if self.player.has_coin:
+            reward += COIN_REWARD
+        done = self.game_over
+        info = self.player.has_coin
+        return new_state, reward, done, info
+
+    # for the constant running player version
+    def step_v2(self, action):
+        global reward, new_state, done, info
+        reward = 0
+        new_state = self.get_state()
+        # Rewarding player for progressing further in the level
+        reward += abs(int(self.player.x - X_STARTING_POSITION) * 50)
+        reward += self.check_overcoming_obstacles()
+        if action == STAY:
+            reward += - STAY_REWARD
+        if action == JUMP_V2:
+            reward += - JUMP_REWARD
+        if self.player.is_dead:
+            reward += DIE_REWARD
+        if self.player.has_coin:
+            reward += COIN_REWARD
         done = self.game_over
         info = self.player.has_coin
         return new_state, reward, done, info
@@ -683,7 +703,7 @@ class Game:
                                             np.exp(-EXPLORATION_DECAY_RATE * self.current_episode)
 
 
-            # 2. version starten manuell
+            # 2. version starten manuell - player is constantly running
             while self.version_2_run:
                 # erhöht die FPS-Anzahl um das Spiel fluessiger zu gestalten
                 self.hide_start_screen()
@@ -706,20 +726,22 @@ class Game:
 
                     ### Q Learning ###
                     self.steps_per_episode += 1
+                    state = self.get_state()
+                    smaller_action_space = [STAY, JUMP_V2]
                     # Exploration - Exploitation trade-off - set between 0 and 1 -> determines whether exploring or exploiting
                     exploration_rate_threshold = random.uniform(0, 1)
                     if exploration_rate_threshold > self.exploration_rate:
                         # exploit: choose action with highest q value for current state
-                        if self.get_state() not in self.q_table:
-                            self.q_table[self.get_state()] = [0 for i in range(3)]
-                        action = np.argmax(self.q_table[self.get_state()])
+                        if state not in self.q_table:
+                            self.q_table[state] = [0 for i in range(2)]
+                        action = np.argmax(self.q_table[state])
                     else:
                         # explore: choose an action randomly
-                        action = random.choice(self.action_space)
+                        action = random.choice(smaller_action_space)
 
                     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
                     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
-                    command_jump = keys[pygame.K_SPACE] == 1 if not self.ki_version_2_run else action == JUMP
+                    command_jump = keys[pygame.K_SPACE] == 1 if not self.ki_version_2_run else action == JUMP_V2
 
                         # Scrolling background is activated once player arrives at the center
                     if self.player.x > PLAYER_STATIC_X and not self.player.movement_blocked:
@@ -783,15 +805,15 @@ class Game:
 
                     self.redraw_game_window()
 
-                    new_state, reward, done, info = self.step(action)
+                    new_state, reward, done, info = self.step_v2(action)
 
                     # Update q table
-                    if self.state not in self.q_table:
-                        self.q_table[self.state] = [0 for i in range(3)]
+                    if state not in self.q_table:
+                        self.q_table[state] = [0 for i in range(2)]
                     if new_state not in self.q_table:
-                        self.q_table[new_state] = [0 for i in range(3)]
+                        self.q_table[new_state] = [0 for i in range(2)]
 
-                    self.q_table[self.state][action] = self.q_table[self.state][action] * (1 - LEARNING_RATE) + \
+                    self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
                                                        LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
                         self.q_table[new_state]))
 
