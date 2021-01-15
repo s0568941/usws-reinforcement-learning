@@ -312,7 +312,7 @@ class Game:
         global game_over
         # Q Learning
         if self.ki_version_1_run:
-            if self.steps_per_episode > MAX_STEPS_PER_EPISODE:
+            if self.steps_per_episode > MAX_STEPS_PER_EPISODE or self.player.is_dead:
                 self.game_over = True
                 self.game_over_screen()
                 self.episode_rewards.append(self.rewards_current_episode)
@@ -321,7 +321,7 @@ class Game:
                 self.save_q_table()
 
         if self.ki_version_2_run:
-            if self.steps_per_episode > MAX_STEPS_PER_EPISODE:
+            if self.steps_per_episode > MAX_STEPS_PER_EPISODE or self.player.is_dead:
                 self.game_over = True
                 self.game_over_screen()
                 self.episode_rewards.append(self.rewards_current_episode)
@@ -379,6 +379,7 @@ class Game:
                 self.main_program_run = True
                 self.version_1_run = False
                 self.hide_game_over_screen()
+                self.episode_rewards.append(self.rewards_current_episode)
                 self.reset()
                 return
 
@@ -387,6 +388,7 @@ class Game:
                 self.main_program_run = True
                 self.version_2_run = False
                 self.hide_game_over_screen()
+                self.episode_rewards.append(self.rewards_current_episode)
                 self.reset()
                 return
 
@@ -485,6 +487,11 @@ class Game:
         info = self.player.has_coin
         return new_state, reward, done, info
 
+    def decay_exploration_rate(self):
+        # Exploration rate decay
+        self.exploration_rate = MIN_EXPLORATION_RATE + (MAX_EXPLORATION_RATE - MIN_EXPLORATION_RATE) * \
+                                np.exp(-EXPLORATION_DECAY_RATE * self.current_episode)
+
     def save_q_table(self):
         if self.q_table:
             with open('../q_learning/q_table.pickle', 'wb') as handle:
@@ -508,6 +515,8 @@ class Game:
                 self.ki_version_1_run = True
                 self.current_episode += 1
                 self.get_state()
+                # Decay rate when training has already been running
+                self.decay_exploration_rate()
             elif self.max_episodes_reached:
                 self.main_program_run = False
                 self.save_q_table()
@@ -518,13 +527,15 @@ class Game:
                 self.ki_version_2_run = True
                 self.current_episode += 1
                 self.get_state()
+                # Decay rate when training has already been running
+                self.decay_exploration_rate()
             elif self.max_episodes_reached:
                 self.main_program_run = False
                 self.save_q_table()
 
             if keys[pygame.K_1]:
                 self.version_1_run = True
-            elif keys[pygame.K_a] or not self.max_episodes_reached and self.ki_version_1_run:
+            elif keys[pygame.K_a]:
                 self.version_1_run = True
                 self.ki_version_1_run = True
                 self.current_episode += 1
@@ -532,7 +543,7 @@ class Game:
                 self.load_q_table()
             elif keys[pygame.K_2]:
                 self.version_2_run = True
-            elif keys[pygame.K_b] or not self.max_episodes_reached and self.ki_version_2_run:
+            elif keys[pygame.K_b]:
                 self.version_2_run = True
                 self.ki_version_2_run = True
                 self.current_episode += 1
@@ -546,8 +557,8 @@ class Game:
                 self.clock.tick(27)
 
                 # prüft jeden enemy ob eine collision vorliegt
-                # for enemy in self.enemies:
-                #     self.check_collision(self.player, enemy)
+                for enemy in self.enemies:
+                    self.check_collision(self.player, enemy)
 
                 # Schaue nach ob eines der events das Spiel beenden moechte (Fensterkreuz)
                 for event in pygame.event.get():
@@ -561,14 +572,13 @@ class Game:
                     keys = pygame.key.get_pressed() if not self.ki_version_1_run else None
 
                     ### Q Learning ###
-                    self.steps_per_episode += 1
-                    state = self.get_state()
+                    state = self.state
                     # Exploration - Exploitation trade-off - set between 0 and 1 -> determines whether exploring or exploiting
                     exploration_rate_threshold = random.uniform(0, 1)
                     if exploration_rate_threshold > self.exploration_rate:
                         # exploit: choose action with highest q value for current state
                         if state not in self.q_table:
-                            self.q_table[state] = [0 for i in range(3)]
+                            self.q_table[state] = [0 for i in range(len(self.action_space))]
                         action = np.argmax(self.q_table[state])
                     else:
                         # explore: choose an action randomly
@@ -674,33 +684,37 @@ class Game:
 
                     self.redraw_game_window()
 
-                    new_state, reward, done, info = self.step(action)
 
-                    # Update q table
-                    if state not in self.q_table:
-                        self.q_table[state] = [0 for i in range(3)]
-                    if new_state not in self.q_table:
-                        self.q_table[new_state] = [0 for i in range(3)]
+                    player_starts_jump = self.player.is_jump and self.player.jump_velocity == JUMP_VELOCITY and action == JUMP
+                    if not player_starts_jump:
+                        self.steps_per_episode += 1
 
-                    self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
-                                                       LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
-                        self.q_table[new_state]))
+                        new_state, reward, done, info = self.step(action)
 
-                    self.state = new_state
-                    self.rewards_current_episode += reward
+                        # Update q table
+                        if state not in self.q_table:
+                            self.q_table[state] = [0 for i in range(len(self.action_space))]
+                        if new_state not in self.q_table:
+                            self.q_table[new_state] = [0 for i in range(len(self.action_space))]
 
-                    if self.steps_per_episode % 200 == 0:
-                        print('------------------------------------')
-                        print('Step ', self.steps_per_episode)
-                        print('Episode', self.current_episode)
-                        print('self.exploration_rate', self.exploration_rate)
-                        print('Reward', reward)
-                        print('Rewards for episode', self.rewards_current_episode)
-                        print('------------------------------------')
+                        self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
+                                                           LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
+                            self.q_table[new_state]))
 
-                    # Exploration rate decay
-                    self.exploration_rate = MIN_EXPLORATION_RATE + (MAX_EXPLORATION_RATE - MIN_EXPLORATION_RATE) * \
-                                            np.exp(-EXPLORATION_DECAY_RATE * self.current_episode)
+                        self.state = new_state
+                        self.rewards_current_episode += reward
+
+                        if self.steps_per_episode % 20 == 0:
+                            print('------------------------------------')
+                            print('Step ', self.steps_per_episode)
+                            print('Episode', self.current_episode)
+                            print('self.exploration_rate', self.exploration_rate)
+                            print('Reward', reward)
+                            print('Rewards for episode', self.rewards_current_episode)
+                            print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
+                            print('------------------------------------')
+
+
 
 
             # 2. version starten manuell - player is constantly running
@@ -725,15 +739,14 @@ class Game:
                     keys = pygame.key.get_pressed() if not self.ki_version_2_run else None
 
                     ### Q Learning ###
-                    self.steps_per_episode += 1
-                    state = self.get_state()
+                    state = self.state
                     smaller_action_space = [STAY, JUMP_V2]
                     # Exploration - Exploitation trade-off - set between 0 and 1 -> determines whether exploring or exploiting
                     exploration_rate_threshold = random.uniform(0, 1)
                     if exploration_rate_threshold > self.exploration_rate:
                         # exploit: choose action with highest q value for current state
                         if state not in self.q_table:
-                            self.q_table[state] = [0 for i in range(2)]
+                            self.q_table[state] = [0 for i in range(len(smaller_action_space))]
                         action = np.argmax(self.q_table[state])
                     else:
                         # explore: choose an action randomly
@@ -805,33 +818,34 @@ class Game:
 
                     self.redraw_game_window()
 
-                    new_state, reward, done, info = self.step_v2(action)
+                    player_starts_jump = self.player.is_jump and self.player.jump_velocity == JUMP_VELOCITY and action == JUMP
+                    if not player_starts_jump:
+                        self.steps_per_episode += 1
 
-                    # Update q table
-                    if state not in self.q_table:
-                        self.q_table[state] = [0 for i in range(2)]
-                    if new_state not in self.q_table:
-                        self.q_table[new_state] = [0 for i in range(2)]
+                        new_state, reward, done, info = self.step_v2(action)
 
-                    self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
-                                                       LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
-                        self.q_table[new_state]))
+                        # Update q table
+                        if state not in self.q_table:
+                            self.q_table[state] = [0 for i in range(len(smaller_action_space))]
+                        if new_state not in self.q_table:
+                            self.q_table[new_state] = [0 for i in range(len(smaller_action_space))]
 
-                    self.state = new_state
-                    self.rewards_current_episode += reward
+                        self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
+                                                           LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
+                            self.q_table[new_state]))
 
-                    if self.steps_per_episode % 200 == 0:
-                        print('------------------------------------')
-                        print('Step ', self.steps_per_episode)
-                        print('Episode', self.current_episode)
-                        print('self.exploration_rate', self.exploration_rate)
-                        print('Reward', reward)
-                        print('Rewards for episode', self.rewards_current_episode)
-                        print('------------------------------------')
+                        self.state = new_state
+                        self.rewards_current_episode += reward
 
-                    # Exploration rate decay
-                    self.exploration_rate = MIN_EXPLORATION_RATE + (MAX_EXPLORATION_RATE - MIN_EXPLORATION_RATE) * \
-                                            np.exp(-EXPLORATION_DECAY_RATE * self.current_episode)
+                        if self.steps_per_episode % 20 == 0:
+                            print('------------------------------------')
+                            print('Step ', self.steps_per_episode)
+                            print('Episode', self.current_episode)
+                            print('self.exploration_rate', self.exploration_rate)
+                            print('Reward', reward)
+                            print('Rewards for episode', self.rewards_current_episode)
+                            print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
+                            print('------------------------------------')
 
 
         pygame.quit()
