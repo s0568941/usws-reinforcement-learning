@@ -103,6 +103,9 @@ class Player:
         self.closest_upper_distance = None
         self.is_dead = False
         self.has_coin = False
+        # For Q Learning
+        self.num_passed_obstacles = 0
+        self.previous_x_q_learning = self.x
 
     def draw(self, screen):
         # Mithilfe von walk_count wird ein Bild aus dem Array ausgesucht, was die Bewegung animiert
@@ -135,7 +138,6 @@ class Player:
             else:
                 screen.blit(idle_right_p[self.idle_count // 6], (self.static_x, self.y))
                 self.idle_count += 1
-        # TODO hitbox will need to be moving with x instead of static_x
         self.hitbox = (self.static_x + 30, self.y + 15, self.height, self.width)
         # Displaying the players hitbox with a red rectangle
         #pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)

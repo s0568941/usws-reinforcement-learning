@@ -29,7 +29,7 @@ from usws_jump_and_run_game.environment.obstacles.coin import Coin
 
 class Game:
     def __init__(self):
-        # Player initilisation
+        # Player initialisation
         self.player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
         self.clock = pygame.time.Clock()
 
@@ -148,8 +148,10 @@ class Game:
         self.current_episode = 0
         # Delta player - coin is the state
         self.state = None
+        self.action = None
         # action space
         self.action_space = [MOVE_RIGHT, MOVE_LEFT, JUMP]
+        self.action_space_v2 = [STAY, JUMP_V2]
         # Track number of steps per episode / game for q learning
         self.steps_per_episode = 0
         self.max_episodes_reached = self.ki_version_1_run and self.current_episode == NUMBER_EPISODES
@@ -330,16 +332,40 @@ class Game:
                 self.save_q_table()
 
         if player.is_dead:
+            if self.ki_version_1_run:
+                self.q_learning(self.state, self.action)
+            elif self.ki_version_2_run:
+                self.q_learning_v2(self.state, self.action, self.action_space_v2)
             self.game_over = True
             self.game_over_screen()
         if player.hitbox[1] < enemy.hitbox[1] + enemy.hitbox[3] and player.hitbox[1] + player.hitbox[3] > enemy.hitbox[
             1]:
             if player.hitbox[0] + player.hitbox[2] > enemy.hitbox[0] and player.hitbox[0] < enemy.hitbox[0] + \
                     enemy.hitbox[2]:
+                if self.ki_version_1_run:
+                    self.player.is_dead = True
+                    self.q_learning(self.state, self.action)
+                    self.game_over = True
+                    self.game_over_screen()
+                    return
+                if self.ki_version_2_run:
+                    self.player.is_dead = True
+                    self.q_learning_v2(self.state, self.action, self.action_space_v2)
+                    self.game_over = True
+                    self.game_over_screen()
+                    return
                 game_over = True
                 self.game_over_screen()
         else:
             game_over = False
+
+    def get_distance_progress(self):
+        global reward
+        reward = 0
+        if self.player.x > self.player.previous_x_q_learning:
+            self.player.previous_x_q_learning = self.player.x
+            reward += 50
+        return reward
 
     def check_overcoming_obstacles(self):
         global reward
@@ -348,6 +374,7 @@ class Game:
             if type(obst) is not Coin and self.player.static_x + PLAYER_HITBOX_PADDING_X > obst.x + obst.width + self.player.speed:
                 if not obst.is_overcome and not self.player.is_dead:
                     obst.is_overcome = True
+                    self.player.num_passed_obstacles += 1
                     if type(obst) is Platform:
                         reward += OVERCOME_PLATFORM_REWARD
                     else:
@@ -357,6 +384,7 @@ class Game:
             if type(enemy) is not Coin and self.player.static_x + PLAYER_HITBOX_PADDING_X > enemy.x + enemy.width + self.player.speed:
                 if not enemy.is_overcome and not self.player.is_dead:
                     enemy.is_overcome = True
+                    self.player.num_passed_obstacles += 1
                     reward += OVERCOME_ENEMY_REWARD
                     return reward
 
@@ -436,6 +464,62 @@ class Game:
         pygame_f.showLabel(self.nico_text)
         pygame_f.updateDisplay()
 
+    def q_learning(self, state, action):
+        self.steps_per_episode += 1
+
+        new_state, reward, done, info = self.step(action)
+
+        # Update q table
+        if state not in self.q_table:
+            self.q_table[state] = [0 for i in range(len(self.action_space))]
+        if new_state not in self.q_table:
+            self.q_table[new_state] = [0 for i in range(len(self.action_space))]
+
+        self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
+                                      LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
+            self.q_table[new_state]))
+
+        self.state = new_state
+        self.rewards_current_episode += reward
+
+        if self.steps_per_episode % 20 == 0:
+            print('------------------------------------')
+            print('Step ', self.steps_per_episode)
+            print('Episode', self.current_episode)
+            print('self.exploration_rate', self.exploration_rate)
+            print('Reward', reward)
+            print('Rewards for episode', self.rewards_current_episode)
+            print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
+            print('------------------------------------')
+
+    def q_learning_v2(self, state, action, smaller_action_space):
+        self.steps_per_episode += 1
+
+        new_state, reward, done, info = self.step_v2(action)
+
+        # Update q table
+        if state not in self.q_table:
+            self.q_table[state] = [0 for i in range(len(smaller_action_space))]
+        if new_state not in self.q_table:
+            self.q_table[new_state] = [0 for i in range(len(smaller_action_space))]
+
+        self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
+                                      LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
+            self.q_table[new_state]))
+
+        self.state = new_state
+        self.rewards_current_episode += reward
+
+        if self.steps_per_episode % 20 == 0:
+            print('------------------------------------')
+            print('Step ', self.steps_per_episode)
+            print('Episode', self.current_episode)
+            print('self.exploration_rate', self.exploration_rate)
+            print('Reward', reward)
+            print('Rewards for episode', self.rewards_current_episode)
+            print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
+            print('------------------------------------')
+
     def get_state(self):
         self.state = ((math.ceil(self.player.static_x - self.coin.x), math.ceil(self.player.y - self.coin.y)),)
         for obst in self.obstacles:
@@ -451,7 +535,7 @@ class Game:
         reward = 0
         new_state = self.get_state()
         # Rewarding player for progressing further in the level
-        reward += abs(int(self.player.x - X_STARTING_POSITION) * 50)
+        reward += self.get_distance_progress()
         reward += self.check_overcoming_obstacles()
         if action == MOVE_RIGHT:
             reward += - MOVE_RIGHT_REWARD
@@ -460,7 +544,12 @@ class Game:
         if action == JUMP:
             reward += - JUMP_REWARD
         if self.player.is_dead:
-            reward += DIE_REWARD
+            if self.player.num_passed_obstacles == 0:
+                reward += - NO_OBSTACLES_PASSED_REWARD
+            else:
+                # the more obstacles are passed, the smaller the punishment
+                reward += - (15 - self.player.num_passed_obstacles) * 4000
+            reward += - DIE_REWARD
         if self.player.has_coin:
             reward += COIN_REWARD
         done = self.game_over
@@ -473,14 +562,19 @@ class Game:
         reward = 0
         new_state = self.get_state()
         # Rewarding player for progressing further in the level
-        reward += abs(int(self.player.x - X_STARTING_POSITION) * 50)
+        reward += self.get_distance_progress()
         reward += self.check_overcoming_obstacles()
         if action == STAY:
             reward += - STAY_REWARD
         if action == JUMP_V2:
             reward += - JUMP_REWARD
         if self.player.is_dead:
-            reward += DIE_REWARD
+            if self.player.num_passed_obstacles == 0:
+                reward += - NO_OBSTACLES_PASSED_REWARD
+            else:
+                # the more obstacles are passed, the smaller the punishment
+                reward += - (15 - self.player.num_passed_obstacles) * 4000
+            reward += - DIE_REWARD
         if self.player.has_coin:
             reward += COIN_REWARD
         done = self.game_over
@@ -583,6 +677,7 @@ class Game:
                     else:
                         # explore: choose an action randomly
                         action = random.choice(self.action_space)
+                    self.action = action
 
                     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
                     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
@@ -712,6 +807,7 @@ class Game:
                             print('Reward', reward)
                             print('Rewards for episode', self.rewards_current_episode)
                             print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
+                            print('Last Reward: ', self.episode_rewards[len(self.episode_rewards) - 1] if len(self.episode_rewards) > 0 else 'None')
                             print('------------------------------------')
 
 
@@ -751,6 +847,7 @@ class Game:
                     else:
                         # explore: choose an action randomly
                         action = random.choice(smaller_action_space)
+                    self.action = action
 
                     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
                     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
@@ -845,8 +942,8 @@ class Game:
                             print('Reward', reward)
                             print('Rewards for episode', self.rewards_current_episode)
                             print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
+                            print('Last Reward: ', self.episode_rewards[len(self.episode_rewards) - 1] if len(self.episode_rewards) > 0 else 'None')
                             print('------------------------------------')
-
 
         pygame.quit()
 
