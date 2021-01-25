@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Konstanten
+# Constants
+
 SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 1380, 690
+FRAME_RATE = 27
 
 # Player Constants
 JUMP_VELOCITY = 10
@@ -27,6 +29,15 @@ END_GAME_TEXT = "Press ESC to exit the game."
 
 # Game Over Screen Constants
 GO_TITLE = "GAME OVER"
+GO_WIN_TITLE = "WINNER"
 KILL_TEXT = "- You died a tragic death -"
+WIN_TEXT = "- You collected a rare US Liberty Gold coin -"
 RETURN_TEXT = "Press the SPACEBAR button to return to the startscreen."
+
+# Directories for Statistics
+Q_TABLE_DIR = '../q_learning/q_table.pickle'
+Q_TABLE_V2_DIR = '../q_learning/q_table_v2.pickle'
+REWARDS_DIR = '../q_learning/data/rewards.pickle'
+DISTANCE_DIR = '../q_learning/data/distances.pickle'
+EXPLORATION_RATE_DIR = '../q_learning/data/exploration_rates.pickle'
 

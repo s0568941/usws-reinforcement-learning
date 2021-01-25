@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Das ist die main File, welche das Game startet
+# This is the main file, which starts the game
+
 import pygame
 
 # Initialisiert alle notwendigen module fuer pygame
@@ -10,8 +11,9 @@ pygame.init()
 import usws_jump_and_run_game.utils.pygame_functions as pygame_f
 # import constants
 from usws_jump_and_run_game.utils.constants import *
+from q_learning.q_learning_stats import generate_stats
 # Parameters from q learning
-from q_learning.q_learning import *
+from q_learning.utils.constants import *
 import random
 import numpy as np
 import math
@@ -27,8 +29,12 @@ from usws_jump_and_run_game.characters.skull import Skull
 from usws_jump_and_run_game.environment.obstacles.coin import Coin
 
 
+# True: Agent will explore and exploit the environment according to specified parameters in q_learning/utils/constants.py
+# False: Agent will exploit the environment (requires a properly trained Q Table)
+train_agent = True
+
 class Game:
-    def __init__(self):
+    def __init__(self, train_agent=True):
         # Player initialisation
         self.player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
         self.clock = pygame.time.Clock()
@@ -134,21 +140,26 @@ class Game:
         self.start_ki_style_1_text = pygame_f.makeLabel(START_KI_STYLE_1, 35, 300, 400, "black", "Arial", "clear")
         self.start_ki_style_2_text = pygame_f.makeLabel(START_KI_STYLE_2, 35, 300, 450, "black", "Arial", "clear")
         self.end_game_text = pygame_f.makeLabel(END_GAME_TEXT, 35, 300, 500, "black", "Arial", "clear")
-        self.nassim_text = pygame_f.makeLabel(NASSIM_TEXT, 25, 1100, 50, "black", "Arial", "clear")
-        self.nico_text = pygame_f.makeLabel(NICO_TEXT, 25, 1100, 100, "black", "Arial", "clear")
+        self.nassim_text = pygame_f.makeLabel(NASSIM_TEXT, 25, SCREEN_WIDTH - 325, 50, "black", "Arial", "clear")
+        self.nico_text = pygame_f.makeLabel(NICO_TEXT, 25, SCREEN_WIDTH - 300, 100, "black", "Arial", "clear")
 
         # Game Over Screen Setup
         self.go_title = pygame_f.makeLabel(GO_TITLE, 100, 430, 150, "black", "Arial", "clear")
         self.kill_text = pygame_f.makeLabel(KILL_TEXT, 40, 500, 300, "black", "Arial", "clear")
         self.return_text = pygame_f.makeLabel(RETURN_TEXT, 35, 350, 350, "black", "Arial", "clear")
 
+        # Game Over Winning Screen Setup
+        self.go_win_title = pygame_f.makeLabel(GO_WIN_TITLE, 100, 530, 150, "black", "Arial", "clear")
+        self.win_text = pygame_f.makeLabel(WIN_TEXT, 40, 400, 300, "black", "Arial", "clear")
+
         ### Q Learning ###
         self.exploration_rate = EXPLORATION_RATE
+        self.learning_rate = LEARNING_RATE
         # Track number of episodes for q learning
         self.current_episode = 0
         # Delta player - coin is the state
         self.state = None
-        self.action = None
+        self.action = -1
         # action space
         self.action_space = [MOVE_RIGHT, MOVE_LEFT, JUMP]
         self.action_space_v2 = [STAY, JUMP_V2]
@@ -158,13 +169,17 @@ class Game:
         self.max_episodes_reached_v2 = self.ki_version_2_run and self.current_episode == NUMBER_EPISODES
         # Track rewards
         self.episode_rewards = []
+        self.episode_exploration_rate = []
+        self.episode_distance = []
         # Q Learning done?
         self.q_l_done = False
         self.rewards_current_episode = 0
         self.q_table = {}
+        self.is_training = train_agent
+        self.max_dist = 0
 
     def reset(self):
-        # Player initilisation
+        # Player initialisation
         self.player = Player(X_STARTING_POSITION, Y_STARTING_POSITION, 20, 40)
         self.clock = pygame.time.Clock()
 
@@ -267,32 +282,25 @@ class Game:
         self.start_ki_style_1_text = pygame_f.makeLabel(START_KI_STYLE_1, 35, 300, 400, "black", "Arial", "clear")
         self.start_ki_style_2_text = pygame_f.makeLabel(START_KI_STYLE_2, 35, 300, 450, "black", "Arial", "clear")
         self.end_game_text = pygame_f.makeLabel(END_GAME_TEXT, 35, 300, 500, "black", "Arial", "clear")
-        self.nassim_text = pygame_f.makeLabel(NASSIM_TEXT, 25, 1100, 600, "black", "Arial", "clear")
-        self.nico_text = pygame_f.makeLabel(NICO_TEXT, 25, 1100, 650, "black", "Arial", "clear")
+        self.nassim_text = pygame_f.makeLabel(NASSIM_TEXT, 25, SCREEN_WIDTH - 325, 50, "black", "Arial", "clear")
+        self.nico_text = pygame_f.makeLabel(NICO_TEXT, 25, SCREEN_WIDTH - 300, 100, "black", "Arial", "clear")
 
         # Game Over Screen Setup
         self.go_title = pygame_f.makeLabel(GO_TITLE, 100, 430, 150, "black", "Arial", "clear")
         self.kill_text = pygame_f.makeLabel(KILL_TEXT, 40, 500, 300, "black", "Arial", "clear")
         self.return_text = pygame_f.makeLabel(RETURN_TEXT, 35, 350, 350, "black", "Arial", "clear")
 
+        # Game Over Winning Screen Setup
+        self.go_win_title = pygame_f.makeLabel(GO_WIN_TITLE, 100, 530, 150, "black", "Arial", "clear")
+        self.win_text = pygame_f.makeLabel(WIN_TEXT, 40, 400, 300, "black", "Arial", "clear")
+
         ### Q Learning ###
         self.steps_per_episode = 0
         self.rewards_current_episode = 0
+        self.action = -1
 
         self.setup_screen()
         pygame_f.updateDisplay()
-
-    #second level (if needed)
-    def version_2(self):
-        pass
-
-    #second level reset (if needed)
-    def version_2_reset(self):
-        pass
-
-    def dump(self, obj):
-        for attr in dir(obj):
-            print("obj.%s = %r" % (attr, getattr(obj, attr)))
 
     def setup_screen(self):
         # Setup screen and background
@@ -310,6 +318,22 @@ class Game:
             enemy.draw(pygame_f.screen)
         pygame_f.updateDisplay()
 
+    def check_for_coin(self):
+        if self.player.has_coin:
+            if self.ki_version_1_run:
+                if self.is_training:
+                    self.q_learning(self.state, self.action)
+                self.game_over = True
+                self.game_over_screen(win=True)
+                return
+            if self.ki_version_2_run:
+                if self.is_training:
+                    self.q_learning_v2(self.state, self.action)
+                self.game_over = True
+                self.game_over_screen(win=True)
+                return
+            self.game_over_screen(win=True)
+
     def check_collision(self, player, enemy):
         global game_over
         # Q Learning
@@ -318,24 +342,36 @@ class Game:
                 self.game_over = True
                 self.game_over_screen()
                 self.episode_rewards.append(self.rewards_current_episode)
+                self.episode_exploration_rate.append(round(self.exploration_rate, 3))
+                self.episode_distance.append(self.player.previous_x_q_learning)
             if self.current_episode == NUMBER_EPISODES:
                 self.main_program_run = False
                 self.save_q_table()
+                self.save_rewards()
+                self.save_distance()
+                self.save_exploration_rate()
 
         if self.ki_version_2_run:
             if self.steps_per_episode > MAX_STEPS_PER_EPISODE or self.player.is_dead:
                 self.game_over = True
                 self.game_over_screen()
                 self.episode_rewards.append(self.rewards_current_episode)
+                self.episode_distance.append(self.player.previous_x_q_learning)
+                self.episode_exploration_rate.append(round(self.exploration_rate, 3))
             if self.current_episode == NUMBER_EPISODES:
                 self.main_program_run = False
-                self.save_q_table()
+                self.save_q_table_v2()
+                self.save_rewards()
+                self.save_distance()
+                self.save_exploration_rate()
 
         if player.is_dead:
             if self.ki_version_1_run:
-                self.q_learning(self.state, self.action)
+                if self.is_training:
+                    self.q_learning(self.state, self.action)
             elif self.ki_version_2_run:
-                self.q_learning_v2(self.state, self.action, self.action_space_v2)
+                if self.is_training:
+                    self.q_learning_v2(self.state, self.action)
             self.game_over = True
             self.game_over_screen()
         if player.hitbox[1] < enemy.hitbox[1] + enemy.hitbox[3] and player.hitbox[1] + player.hitbox[3] > enemy.hitbox[
@@ -344,13 +380,15 @@ class Game:
                     enemy.hitbox[2]:
                 if self.ki_version_1_run:
                     self.player.is_dead = True
-                    self.q_learning(self.state, self.action)
+                    if self.is_training:
+                        self.q_learning(self.state, self.action)
                     self.game_over = True
                     self.game_over_screen()
                     return
                 if self.ki_version_2_run:
                     self.player.is_dead = True
-                    self.q_learning_v2(self.state, self.action, self.action_space_v2)
+                    if self.is_training:
+                        self.q_learning_v2(self.state, self.action)
                     self.game_over = True
                     self.game_over_screen()
                     return
@@ -371,7 +409,8 @@ class Game:
         global reward
         reward = 0
         for obst in self.obstacles:
-            if type(obst) is not Coin and self.player.static_x + PLAYER_HITBOX_PADDING_X > obst.x + obst.width + self.player.speed:
+            if type(
+                    obst) is not Coin and self.player.static_x + PLAYER_HITBOX_PADDING_X > obst.x + obst.width + self.player.speed:
                 if not obst.is_overcome and not self.player.is_dead:
                     obst.is_overcome = True
                     self.player.num_passed_obstacles += 1
@@ -381,7 +420,8 @@ class Game:
                         reward += OVERCOME_ENEMY_REWARD
 
         for enemy in self.enemies:
-            if type(enemy) is not Coin and self.player.static_x + PLAYER_HITBOX_PADDING_X > enemy.x + enemy.width + self.player.speed:
+            if type(
+                    enemy) is not Coin and self.player.static_x + PLAYER_HITBOX_PADDING_X > enemy.x + enemy.width + self.player.speed:
                 if not enemy.is_overcome and not self.player.is_dead:
                     enemy.is_overcome = True
                     self.player.num_passed_obstacles += 1
@@ -390,15 +430,21 @@ class Game:
 
         return reward
 
-    def game_over_screen(self):
+    def game_over_screen(self, win=False):
         global version_1_run
         global version_2_run
-        self.clock.tick(27)
+        self.clock.tick(FRAME_RATE)
 
-        pygame_f.showLabel(self.go_title)
-        pygame_f.showLabel(self.kill_text)
-        pygame_f.showLabel(self.return_text)
-        pygame_f.updateDisplay()
+        if win:
+            pygame_f.showLabel(self.go_win_title)
+            pygame_f.showLabel(self.win_text)
+            pygame_f.showLabel(self.return_text)
+            pygame_f.updateDisplay()
+        else:
+            pygame_f.showLabel(self.go_title)
+            pygame_f.showLabel(self.kill_text)
+            pygame_f.showLabel(self.return_text)
+            pygame_f.updateDisplay()
 
         while True:
             # Did agent finish?
@@ -408,6 +454,8 @@ class Game:
                 self.version_1_run = False
                 self.hide_game_over_screen()
                 self.episode_rewards.append(self.rewards_current_episode)
+                self.episode_distance.append(self.player.previous_x_q_learning)
+                self.episode_exploration_rate.append(round(self.exploration_rate, 3))
                 self.reset()
                 return
 
@@ -417,6 +465,8 @@ class Game:
                 self.version_2_run = False
                 self.hide_game_over_screen()
                 self.episode_rewards.append(self.rewards_current_episode)
+                self.episode_distance.append(self.player.previous_x_q_learning)
+                self.episode_exploration_rate.append(round(self.exploration_rate, 3))
                 self.reset()
                 return
 
@@ -445,14 +495,19 @@ class Game:
     def hide_game_over_screen(self):
         pygame_f.hideLabel(self.go_title)
         pygame_f.hideLabel(self.kill_text)
+        pygame_f.hideLabel(self.go_win_title)
+        pygame_f.hideLabel(self.win_text)
         pygame_f.hideLabel(self.return_text)
 
     def start_screen(self):
-        self.clock.tick(27)
+        self.clock.tick(FRAME_RATE)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.main_program_run = False
                 self.save_q_table()
+                self.save_rewards()
+                self.save_distance()
+                self.save_exploration_rate()
 
         pygame_f.showLabel(self.title)
         pygame_f.showLabel(self.start_style_1_text)
@@ -464,62 +519,68 @@ class Game:
         pygame_f.showLabel(self.nico_text)
         pygame_f.updateDisplay()
 
+    def q_learning_console_stats(self, reward):
+        if self.steps_per_episode % 20 == 0:
+            print('------------------------------------')
+            print('Step ', self.steps_per_episode)
+            print('Episode', self.current_episode)
+            print('Exploration rate', self.exploration_rate)
+            print('Reward for last step', reward)
+            print('Rewards for episode', self.rewards_current_episode)
+            print('Max Reward for current training: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
+            print('Last Reward: ',
+                  self.episode_rewards[len(self.episode_rewards) - 1] if len(self.episode_rewards) > 0 else 'None')
+            print('Max Distance:', self.max_dist)
+            print('Learning rate', self.learning_rate)
+            print('------------------------------------')
+
     def q_learning(self, state, action):
         self.steps_per_episode += 1
 
         new_state, reward, done, info = self.step(action)
 
-        # Update q table
-        if state not in self.q_table:
-            self.q_table[state] = [0 for i in range(len(self.action_space))]
-        if new_state not in self.q_table:
-            self.q_table[new_state] = [0 for i in range(len(self.action_space))]
+        if self.is_training and self.ki_version_1_run:
+            # Update q table
+            if state not in self.q_table:
+                self.q_table[state] = [0 for i in range(len(self.action_space))]
+            if new_state not in self.q_table:
+                self.q_table[new_state] = [0 for i in range(len(self.action_space))]
 
-        self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
-                                      LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
-            self.q_table[new_state]))
+            self.q_table[state][action] = self.q_table[state][action] * (1 - self.learning_rate) + \
+                                          self.learning_rate * (reward + DISCOUNT_RATE * np.max(
+                self.q_table[new_state]))
 
-        self.state = new_state
-        self.rewards_current_episode += reward
+            self.state = new_state
+            self.rewards_current_episode += reward
 
-        if self.steps_per_episode % 20 == 0:
-            print('------------------------------------')
-            print('Step ', self.steps_per_episode)
-            print('Episode', self.current_episode)
-            print('self.exploration_rate', self.exploration_rate)
-            print('Reward', reward)
-            print('Rewards for episode', self.rewards_current_episode)
-            print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
-            print('------------------------------------')
+            self.max_dist = self.player.previous_x_q_learning if self.player.previous_x_q_learning > self.max_dist else self.max_dist
 
-    def q_learning_v2(self, state, action, smaller_action_space):
-        self.steps_per_episode += 1
+            self.q_learning_console_stats(reward)
 
-        new_state, reward, done, info = self.step_v2(action)
+    def q_learning_v2(self, state, action):
+        if self.is_training and self.ki_version_2_run:
+            self.steps_per_episode += 1
 
-        # Update q table
-        if state not in self.q_table:
-            self.q_table[state] = [0 for i in range(len(smaller_action_space))]
-        if new_state not in self.q_table:
-            self.q_table[new_state] = [0 for i in range(len(smaller_action_space))]
+            new_state, reward, done, info = self.step_v2(action)
 
-        self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
-                                      LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
-            self.q_table[new_state]))
+            # Update q table
+            if state not in self.q_table:
+                self.q_table[state] = [0 for i in range(len(self.action_space_v2))]
+            if new_state not in self.q_table:
+                self.q_table[new_state] = [0 for i in range(len(self.action_space_v2))]
 
-        self.state = new_state
-        self.rewards_current_episode += reward
+            self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
+                                          LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
+                self.q_table[new_state]))
 
-        if self.steps_per_episode % 20 == 0:
-            print('------------------------------------')
-            print('Step ', self.steps_per_episode)
-            print('Episode', self.current_episode)
-            print('self.exploration_rate', self.exploration_rate)
-            print('Reward', reward)
-            print('Rewards for episode', self.rewards_current_episode)
-            print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
-            print('------------------------------------')
+            self.state = new_state
+            self.rewards_current_episode += reward
 
+            self.max_dist = self.player.previous_x_q_learning if self.player.previous_x_q_learning > self.max_dist else self.max_dist
+
+            self.q_learning_console_stats(reward)
+
+    # Relative position of player to the coin and all the obstacles and enemies
     def get_state(self):
         self.state = ((math.ceil(self.player.static_x - self.coin.x), math.ceil(self.player.y - self.coin.y)),)
         for obst in self.obstacles:
@@ -547,7 +608,7 @@ class Game:
             if self.player.num_passed_obstacles == 0:
                 reward += - NO_OBSTACLES_PASSED_REWARD
             else:
-                # the more obstacles are passed, the smaller the punishment
+                # the more obstacles are passed, the smaller the penalty
                 reward += - (15 - self.player.num_passed_obstacles) * 4000
             reward += - DIE_REWARD
         if self.player.has_coin:
@@ -586,15 +647,51 @@ class Game:
         self.exploration_rate = MIN_EXPLORATION_RATE + (MAX_EXPLORATION_RATE - MIN_EXPLORATION_RATE) * \
                                 np.exp(-EXPLORATION_DECAY_RATE * self.current_episode)
 
+        # Decay Learning rate as well if it is greater than 0.1
+        # Starts with higher learning rate and finishes with 0.1
+        if self.learning_rate - 0.0002 >= 0.1:
+            self.learning_rate = self.learning_rate - 0.0002
+            # 0.0002 for 2000 episodes
+            self.learning_rate = round(self.learning_rate, 4)
+        elif self.learning_rate < 0.1:
+            self.learning_rate = 0.1
+
+    def save_pickle(self, path, data):
+        with open(path, 'wb') as handle:
+            pickle.dump(data, handle)
+
+    def save_distance(self):
+        if self.episode_distance:
+            self.save_pickle(DISTANCE_DIR, self.episode_distance)
+
+    def save_rewards(self):
+        if self.episode_rewards:
+            self.save_pickle(REWARDS_DIR, self.episode_rewards)
+
+    def save_exploration_rate(self):
+        if self.episode_exploration_rate:
+            self.save_pickle(EXPLORATION_RATE_DIR, self.episode_exploration_rate)
+
     def save_q_table(self):
         if self.q_table:
-            with open('../q_learning/q_table.pickle', 'wb') as handle:
-                pickle.dump(self.q_table, handle)
+            self.save_pickle(Q_TABLE_DIR, self.q_table)
+
+    def save_q_table_v2(self):
+        if self.q_table:
+            self.save_pickle(Q_TABLE_V2_DIR, self.q_table)
 
     def load_q_table(self):
         if not self.q_table:
-            if os.path.isfile('../q_learning/q_table.pickle'):
-                with open('../q_learning/q_table.pickle', 'rb') as handle:
+            print(os.path.isfile(Q_TABLE_DIR))
+            if os.path.isfile(Q_TABLE_DIR):
+                with open(Q_TABLE_DIR, 'rb') as handle:
+                    self.q_table = pickle.load(handle)
+
+    def load_q_table_v2(self):
+        if not self.q_table:
+            print(os.path.isfile(Q_TABLE_V2_DIR))
+            if os.path.isfile(Q_TABLE_V2_DIR):
+                with open(Q_TABLE_V2_DIR, 'rb') as handle:
                     self.q_table = pickle.load(handle)
 
     def play_game(self):
@@ -614,6 +711,9 @@ class Game:
             elif self.max_episodes_reached:
                 self.main_program_run = False
                 self.save_q_table()
+                self.save_rewards()
+                self.save_distance()
+                self.save_exploration_rate()
 
             self.max_episodes_reached = self.ki_version_2_run and self.current_episode == NUMBER_EPISODES
             if not self.max_episodes_reached and self.ki_version_2_run:
@@ -625,7 +725,10 @@ class Game:
                 self.decay_exploration_rate()
             elif self.max_episodes_reached:
                 self.main_program_run = False
-                self.save_q_table()
+                self.save_q_table_v2()
+                self.save_rewards()
+                self.save_distance()
+                self.save_exploration_rate()
 
             if keys[pygame.K_1]:
                 self.version_1_run = True
@@ -642,13 +745,16 @@ class Game:
                 self.ki_version_2_run = True
                 self.current_episode += 1
                 self.get_state()
-                self.load_q_table()
+                self.load_q_table_v2()
 
             # 1.version starten manuell
             while self.version_1_run:
                 # erhöht die FPS-Anzahl um das Spiel fluessiger zu gestalten
                 self.hide_start_screen()
-                self.clock.tick(27)
+                self.clock.tick(FRAME_RATE)
+
+                # Game won?
+                self.check_for_coin()
 
                 # prüft jeden enemy ob eine collision vorliegt
                 for enemy in self.enemies:
@@ -660,7 +766,10 @@ class Game:
                         self.version_1_run = False
                         self.main_program_run = False
                         self.save_q_table()
-                        # sys.exit() waere eine andere alternative
+                        self.save_rewards()
+                        self.save_distance()
+                        self.save_exploration_rate()
+
                 if not self.game_over:
                     # Hole eine aktuelle Liste der Tasten, die gedrueckt wurden
                     keys = pygame.key.get_pressed() if not self.ki_version_1_run else None
@@ -669,14 +778,27 @@ class Game:
                     state = self.state
                     # Exploration - Exploitation trade-off - set between 0 and 1 -> determines whether exploring or exploiting
                     exploration_rate_threshold = random.uniform(0, 1)
+                    if not self.is_training:
+                        exploration_rate_threshold = 4
                     if exploration_rate_threshold > self.exploration_rate:
                         # exploit: choose action with highest q value for current state
                         if state not in self.q_table:
                             self.q_table[state] = [0 for i in range(len(self.action_space))]
-                        action = np.argmax(self.q_table[state])
+                        if self.action == JUMP or self.player.is_jump:
+                            # Remove jump action as player is not able to jump at this point
+                            # Player can only move to the right or left while jumping
+                            action = np.argmax(self.q_table[state][:-1])
+                        else:
+                            action = np.argmax(self.q_table[state])
                     else:
                         # explore: choose an action randomly
-                        action = random.choice(self.action_space)
+                        if self.action == JUMP or self.player.is_jump:
+                            # Remove jump action as player is not able to jump at this point
+                            # Player can only move to the right or left while jumping
+                            action = random.choice(self.action_space[:-1])
+                        else:
+                            action = random.choice(self.action_space)
+
                     self.action = action
 
                     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
@@ -744,6 +866,7 @@ class Game:
                     else:
                         self.player.jump()
 
+                    # Player will be controlled depending on his state:
                     if self.player.is_fall and not self.player.is_on_obstacle and self.player.y < Y_STARTING_POSITION and not self.player.is_colliding and not self.player.obstacle_underneath_player:
                         self.player.fall_from_obstacle()
                     if self.player.is_landing and self.player.is_player_underneath_obstacle():
@@ -772,52 +895,22 @@ class Game:
                     self.player.is_obstacle_underneath_player()
                     self.player.check_for_vertical_obstacles()
 
-                    # for debugging:
-                    if self.counter % 1000 == 0:
-                        self.dump(self.player)
                     self.counter += 1
 
                     self.redraw_game_window()
 
-
                     player_starts_jump = self.player.is_jump and self.player.jump_velocity == JUMP_VELOCITY and action == JUMP
                     if not player_starts_jump:
-                        self.steps_per_episode += 1
-
-                        new_state, reward, done, info = self.step(action)
-
-                        # Update q table
-                        if state not in self.q_table:
-                            self.q_table[state] = [0 for i in range(len(self.action_space))]
-                        if new_state not in self.q_table:
-                            self.q_table[new_state] = [0 for i in range(len(self.action_space))]
-
-                        self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
-                                                           LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
-                            self.q_table[new_state]))
-
-                        self.state = new_state
-                        self.rewards_current_episode += reward
-
-                        if self.steps_per_episode % 20 == 0:
-                            print('------------------------------------')
-                            print('Step ', self.steps_per_episode)
-                            print('Episode', self.current_episode)
-                            print('self.exploration_rate', self.exploration_rate)
-                            print('Reward', reward)
-                            print('Rewards for episode', self.rewards_current_episode)
-                            print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
-                            print('Last Reward: ', self.episode_rewards[len(self.episode_rewards) - 1] if len(self.episode_rewards) > 0 else 'None')
-                            print('------------------------------------')
-
-
-
+                        self.q_learning(state, action)
 
             # 2. version starten manuell - player is constantly running
             while self.version_2_run:
                 # erhöht die FPS-Anzahl um das Spiel fluessiger zu gestalten
                 self.hide_start_screen()
-                self.clock.tick(27)
+                self.clock.tick(FRAME_RATE)
+
+                # Game won?
+                self.check_for_coin()
 
                 # prüft jeden enemy ob eine collision vorliegt
                 for enemy in self.enemies:
@@ -828,32 +921,47 @@ class Game:
                     if event.type == pygame.QUIT:
                         self.version_2_run = False
                         self.main_program_run = False
-                        self.save_q_table()
-                        # sys.exit() waere eine andere alternative
+                        self.save_q_table_v2()
+                        self.save_rewards()
+                        self.save_distance()
+                        self.save_exploration_rate()
+
                 if not self.game_over:
                     # Hole eine aktuelle Liste der Tasten, die gedrueckt wurden
                     keys = pygame.key.get_pressed() if not self.ki_version_2_run else None
 
                     ### Q Learning ###
                     state = self.state
-                    smaller_action_space = [STAY, JUMP_V2]
                     # Exploration - Exploitation trade-off - set between 0 and 1 -> determines whether exploring or exploiting
                     exploration_rate_threshold = random.uniform(0, 1)
+                    if not self.is_training:
+                        exploration_rate_threshold = 4
                     if exploration_rate_threshold > self.exploration_rate:
                         # exploit: choose action with highest q value for current state
                         if state not in self.q_table:
-                            self.q_table[state] = [0 for i in range(len(smaller_action_space))]
-                        action = np.argmax(self.q_table[state])
+                            self.q_table[state] = [0 for i in range(len(self.action_space_v2))]
+                        if self.action == JUMP_V2 or self.player.is_jump:
+                            # Remove jump action as player is not able to jump at this point
+                            # Player can only move to the right or left while jumping
+                            action = self.action_space_v2[0]
+                        else:
+                            action = np.argmax(self.q_table[state])
                     else:
                         # explore: choose an action randomly
-                        action = random.choice(smaller_action_space)
+                        if self.action == JUMP_V2 or self.player.is_jump:
+                            # Remove jump action as player is not able to jump at this point
+                            # Player can only move to the right or left while jumping
+                            action = self.action_space_v2[0]
+                        else:
+                            action = random.choice(self.action_space_v2)
+
                     self.action = action
 
                     # Bewege den Spieler auf Basis der gedrueckten Tasten mit der Geschwindigkeit des Spielers
                     # Pruefe auch ob Spieler durch die Bewegung noch im Screen bleibt
                     command_jump = keys[pygame.K_SPACE] == 1 if not self.ki_version_2_run else action == JUMP_V2
 
-                        # Scrolling background is activated once player arrives at the center
+                    # Scrolling background is activated once player arrives at the center
                     if self.player.x > PLAYER_STATIC_X and not self.player.movement_blocked:
                         pygame_f.scrollBackground(-self.player.speed, 0)
                         for obstacle in self.obstacles:
@@ -871,7 +979,6 @@ class Game:
                         self.player.idle_right = True
                         self.player.last_dir = 'r'
 
-
                     # Wenn der Spieler nicht springt, dann bewegt er sich normal mit der Geschwindigkeit
                     if not self.player.is_jump:
                         if command_jump:
@@ -885,6 +992,7 @@ class Game:
                     else:
                         self.player.jump()
 
+                    # Player will be controlled depending on his state:
                     if self.player.is_fall and not self.player.is_on_obstacle and self.player.y < Y_STARTING_POSITION and not self.player.is_colliding and not self.player.obstacle_underneath_player:
                         self.player.fall_from_obstacle()
                     if self.player.is_landing and self.player.is_player_underneath_obstacle():
@@ -917,36 +1025,11 @@ class Game:
 
                     player_starts_jump = self.player.is_jump and self.player.jump_velocity == JUMP_VELOCITY and action == JUMP
                     if not player_starts_jump:
-                        self.steps_per_episode += 1
-
-                        new_state, reward, done, info = self.step_v2(action)
-
-                        # Update q table
-                        if state not in self.q_table:
-                            self.q_table[state] = [0 for i in range(len(smaller_action_space))]
-                        if new_state not in self.q_table:
-                            self.q_table[new_state] = [0 for i in range(len(smaller_action_space))]
-
-                        self.q_table[state][action] = self.q_table[state][action] * (1 - LEARNING_RATE) + \
-                                                           LEARNING_RATE * (reward + DISCOUNT_RATE * np.max(
-                            self.q_table[new_state]))
-
-                        self.state = new_state
-                        self.rewards_current_episode += reward
-
-                        if self.steps_per_episode % 20 == 0:
-                            print('------------------------------------')
-                            print('Step ', self.steps_per_episode)
-                            print('Episode', self.current_episode)
-                            print('self.exploration_rate', self.exploration_rate)
-                            print('Reward', reward)
-                            print('Rewards for episode', self.rewards_current_episode)
-                            print('Max Reward: ', max(self.episode_rewards) if len(self.episode_rewards) > 0 else 0)
-                            print('Last Reward: ', self.episode_rewards[len(self.episode_rewards) - 1] if len(self.episode_rewards) > 0 else 'None')
-                            print('------------------------------------')
+                        self.q_learning_v2(self.state, self.action)
 
         pygame.quit()
 
 
-game = Game()
+game = Game(train_agent)
 game.play_game()
+generate_stats()
