@@ -13,6 +13,7 @@ class Obstacle:
         self.height = height
         self.speed = 5
         self.hitbox = (self.x, self.y, self.width, self.height)
+        self.is_overcome = False
 
     def draw(self, screen):
         self.hitbox = (self.x, self.y, self.width, self.height)
