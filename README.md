@@ -62,6 +62,10 @@ To do this, set the `train_agent` flag at the very beginning of the
 `usws_jump_and_run_game/main.py` file to `False`.
 #####Do not forget to set it back to `True` once you want the agent to properly train again.
 
+## Download Presentation Slides
+The size of the slides of our presentation is too large which is why we uplaoded them here:
+https://www.transfernow.net/wk70uH012021
+
 ## Sources
 These are the sources we have used to develop the game 
 and to implement the Q-Learning algorithm:
