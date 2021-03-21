@@ -44,7 +44,7 @@ If you want to collect data from multiple trainings, make sure to rename the fil
 will be overwritten (`q_learning/q_learning_stats.py` contains the constants at the top of the file
 which indicate where the data will be saved).
 
-Please not that when you switch between the two training versions, you should move your saved `.pickle`
+Please note, that when you switch between the two training versions, you should move your saved `.pickle`
 data or rename the files, because otherwise they get overwritten or, in case of the Q Table, you will
 get invalid results.
 
